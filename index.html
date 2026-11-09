@@ -91,8 +91,6 @@
     <div id="planner" style="border-top:1px solid var(--border);margin-top:14px;padding-top:14px">
       <h2 style="margin-bottom:8px">Millal on kõige soodsam?</h2>
       <div class="form">
-        <label>Pakett
-          <select id="plTariff"><option value="spot">Börsihind</option></select></label>
         <label>Kestus
           <select id="plDur">
             <option value="0.5">30 min</option><option value="1">1 h</option><option value="1.5">1,5 h</option>
@@ -197,7 +195,6 @@ function render(D) {
   if (A.known && A.known.length) reco += `<p class="note">Teadaolevad fikseeritud hinnad: ${A.known.map(x => `${x.month} ${fmt(x.price)} s/kWh`).join(", ")}. <a href="${A.url}" rel="noopener">Alexela „Vali ise”</a></p>`;
   document.getElementById("reco").innerHTML = reco;
 
-  window._D = D; if (window._spot) initPlanner();
   window._rows = rows;
   drawChart(rows);
 
@@ -282,11 +279,8 @@ fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
     const k = dayKey(t), dayName = k === todayK ? "täna" : k === tomK ? "homme" : dmy(t);
     const o = document.createElement("option"); o.value = t; o.textContent = `${dayName} kell ${hm(t)}`; sel.appendChild(o);
   }
-  ["plTariff", "plDur", "plWithin"].forEach(id => document.getElementById(id).addEventListener("input", () => {
-    try { localStorage.setItem("plTariff", document.getElementById("plTariff").value); } catch (e) {}
-    plan();
-  }));
-  if (window._D) initPlanner(); else plan();
+  ["plDur", "plWithin"].forEach(id => document.getElementById(id).addEventListener("input", plan));
+  plan();
   const now = Date.now() / 1000;
   const cur = pts.filter(p => p.t <= now).pop();
   const today = dayKey(now), tomorrow = dayKey(now + 86400);
@@ -311,38 +305,13 @@ fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
 }).catch(() => { document.getElementById("spotNote").textContent = "Börsihindu ei õnnestunud laadida."; });
 
 // Soodsaim järjestikune ajavahemik teadaolevate hindade seas
-function initPlanner() {
-  const F = window._D && window._D.fixedPlan, sel = document.getElementById("plTariff");
-  if (F && !sel.querySelector('[value="fixed"]')) {
-    const o = document.createElement("option"); o.value = "fixed";
-    o.textContent = `Fikseeritud: päev ${fmt(F.day, 2)} / öö ${fmt(F.night, 2)} s`; sel.appendChild(o);
-    try { if (localStorage.getItem("plTariff") === "fixed") sel.value = "fixed"; } catch (e) {}
-  }
-  plan();
-}
-
-// Fikseeritud paketi päevane aeg: tööpäeviti 7–22 (Tallinna aeg)
-function isDayTariff(t) {
-  const d = new Date(t * 1000);
-  const wd = d.toLocaleDateString("en-GB", { timeZone: tz, weekday: "short" });
-  const hh = +d.toLocaleString("en-GB", { timeZone: tz, hour: "2-digit", hourCycle: "h23" });
-  return !["Sat", "Sun"].includes(wd) && hh >= 7 && hh < 22;
-}
-
-// Soodsaim järjestikune ajavahemik
 function plan() {
-  const out = document.getElementById("plOut");
+  const pts = window._spot || [], out = document.getElementById("plOut");
   const n = Math.round(+document.getElementById("plDur").value * 4);
   const deadline = +document.getElementById("plWithin").value;
-  const tariff = document.getElementById("plTariff").value, F = window._D && window._D.fixedPlan;
-  const fixed = tariff === "fixed" && F;
   const now = Date.now() / 1000, startMin = Math.floor(now / 900) * 900;
   const limit = deadline || Infinity;
-  let fut;
-  if (fixed) {
-    const end = deadline || startMin + 36 * 3600; fut = [];
-    for (let t = startMin; t < end; t += 900) fut.push({ t, v: isDayTariff(t) ? F.day : F.night });
-  } else fut = (window._spot || []).filter(p => p.t >= startMin);
+  const fut = pts.filter(p => p.t >= startMin);
   let best = null, nowWin = null;
   for (let i = 0; i + n <= fut.length; i++) {
     const w = fut.slice(i, i + n);
@@ -350,23 +319,21 @@ function plan() {
     if (w[n - 1].t + 900 > limit) break;
     const avg = w.reduce((s, p) => s + p.v, 0) / n;
     if (i === 0) nowWin = { t: w[0].t, avg };
-    if (!best || avg < best.avg - 1e-9) best = { t: w[0].t, avg };
+    if (!best || avg < best.avg) best = { t: w[0].t, avg };
   }
-  window._plan = best && !fixed ? { t0: best.t, t1: best.t + n * 900 } : null;
+  window._plan = best ? { t0: best.t, t1: best.t + n * 900 } : null;
   if (window._spot) drawSpot(window._spot);
   if (!best) { out.innerHTML = deadline && deadline - now < n * 900
       ? `<p class="note">Selleks ajaks ei jõua valitud kestusega valmis – vali hilisem aeg või lühem kestus.</p>`
       : `<p class="note">Selle valikuga ei ole piisavalt teadaolevaid hindu. Homsed hinnad avaldatakse umbes kell 14.</p>`; return; }
   const when = t => `${dmy(t)} kell ${hm(t)}`;
-  let h = `<div class="best"><div class="note">${fixed ? "Varaseim soodne aeg" : "Soodsaim aeg"}</div><div class="big">${when(best.t)}–${hm(best.t + n * 900)}</div>
+  let h = `<div class="best"><div class="note">Soodsaim aeg</div><div class="big">${when(best.t)}–${hm(best.t + n * 900)}</div>
     <div>keskmine hind <b>${fmt(best.avg, 2)} s/kWh</b></div></div>`;
   if (nowWin && nowWin.t !== best.t) {
     const diff = nowWin.avg - best.avg;
     h += `<p class="note">Kohe alustades oleks keskmine ${fmt(nowWin.avg, 2)} s/kWh – ootamine säästab ${fmt(diff, 2)} s/kWh.</p>`;
   } else if (nowWin) h += `<p class="note">Praegu ongi soodsaim aeg alustada.</p>`;
-  h += fixed
-    ? `<p class="note">Fikseeritud paketis on öine hind ${fmt(F.night, 2)} ja päevane ${fmt(F.day, 2)} s/kWh (kuutasu ${fmt(F.monthlyFee, 2)} €, kehtib ${fmtDate(F.start)}–${fmtDate(F.end)}). Öine aeg on tööpäeviti 22–7 ning terve laupäev ja pühapäev; riigipühi arvutus ei arvesta. Võrk 4 puhul on samal ajal ka võrgutasu umbes 2 s/kWh odavam.</p>`
-    : `<p class="note">Arvestatud on ainult börsihinda koos käibemaksuga. Fikseeritud hinnaga kuul ei muuda ajastus energiahinda, Võrk 4 võrgutasu on öösel (tööpäeviti 22–7) ja nädalavahetusel veel umbes 2 s/kWh odavam.</p>`;
+  h += `<p class="note">Arvestatud on ainult börsihinda koos käibemaksuga. Fikseeritud hinnaga kuul ei muuda ajastus energiahinda, Võrk 4 võrgutasu on öösel (tööpäeviti 22–7) ja nädalavahetusel veel umbes 2 s/kWh odavam.</p>`;
   out.innerHTML = h;
 }
 

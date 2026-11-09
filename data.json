@@ -167,16 +167,5 @@
       "url": "https://www.err.ee/1610139388/tiit-hobejogi-elektrituru-suurim-mojutaja-on-jarjest-enam-ilm",
       "date": "2026-09-16"
     }
-  ],
-  "fixedPlan": {
-    "name": "Fikseeritud hinnaga elekter + ühisarve Elektrilevi võrguteenusega",
-    "start": "2026-11-01",
-    "end": "2027-04-30",
-    "months": 6,
-    "day": 17.9,
-    "night": 15.0,
-    "monthlyFee": 2.02,
-    "nightShare": 0.55,
-    "note": "Päevane hind kehtib tööpäeviti kell 7–22, öine hind ülejäänud ajal (öine tariif võib müüjati erineda). Võrdluse keskmine eeldab, et 55% tarbimisest jääb öisele ajale."
-  }
+  ]
 }
