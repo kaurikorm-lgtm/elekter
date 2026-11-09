@@ -95,8 +95,6 @@
             <option value="0">kõik teadaolevad tunnid</option><option value="6">6 h jooksul</option>
             <option value="12">12 h jooksul</option><option value="24">24 h jooksul</option>
           </select></label>
-        <label>Võimsus (kW, valikuline)
-          <input id="plKw" type="number" min="0" step="0.1" inputmode="decimal" placeholder="nt 2"></label>
       </div>
       <div id="plOut" class="reco" aria-live="polite"></div>
     </div>
@@ -265,7 +263,7 @@ fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
   const pts = (P.ee || []).map(([t, p]) => ({ t, v: p * 1.24 / 10 }));
   if (!pts.length) { document.getElementById("spotNote").textContent = "Börsihindu ei õnnestunud laadida" + (P.error ? ` (${P.error})` : "") + "."; return; }
   window._spot = pts; drawSpot(pts);
-  ["plDur", "plWithin", "plKw"].forEach(id => document.getElementById(id).addEventListener("input", plan));
+  ["plDur", "plWithin"].forEach(id => document.getElementById(id).addEventListener("input", plan));
   plan();
   const now = Date.now() / 1000;
   const cur = pts.filter(p => p.t <= now).pop();
@@ -295,7 +293,6 @@ function plan() {
   const pts = window._spot || [], out = document.getElementById("plOut");
   const n = Math.round(+document.getElementById("plDur").value * 4);
   const within = +document.getElementById("plWithin").value;
-  const kw = parseFloat(String(document.getElementById("plKw").value).replace(",", ".")) || 0;
   const now = Date.now() / 1000, startMin = Math.floor(now / 900) * 900;
   const limit = within ? now + within * 3600 : Infinity;
   const fut = pts.filter(p => p.t >= startMin);
@@ -311,13 +308,12 @@ function plan() {
   window._plan = best ? { t0: best.t, t1: best.t + n * 900 } : null;
   if (window._spot) drawSpot(window._spot);
   if (!best) { out.innerHTML = `<p class="note">Selle valikuga ei ole piisavalt teadaolevaid hindu. Homsed hinnad avaldatakse umbes kell 14.</p>`; return; }
-  const kwh = kw * n / 4, cost = a => kwh * a / 100;
   const when = t => `${dmy(t)} kell ${hm(t)}`;
   let h = `<div class="best"><div class="note">Soodsaim aeg</div><div class="big">${when(best.t)}–${hm(best.t + n * 900)}</div>
-    <div>keskmine hind <b>${fmt(best.avg, 2)} s/kWh</b>${kw ? ` · ${fmt(kwh)} kWh maksab energiana umbes <b>${fmt(cost(best.avg), 2)} €</b>` : ""}</div></div>`;
+    <div>keskmine hind <b>${fmt(best.avg, 2)} s/kWh</b></div></div>`;
   if (nowWin && nowWin.t !== best.t) {
     const diff = nowWin.avg - best.avg;
-    h += `<p class="note">Kohe alustades oleks keskmine ${fmt(nowWin.avg, 2)} s/kWh${kw ? ` (umbes ${fmt(cost(nowWin.avg), 2)} €)` : ""} – ootamine säästab ${fmt(diff, 2)} s/kWh${kw ? `, kokku umbes ${fmt(cost(diff), 2)} €` : ""}.</p>`;
+    h += `<p class="note">Kohe alustades oleks keskmine ${fmt(nowWin.avg, 2)} s/kWh – ootamine säästab ${fmt(diff, 2)} s/kWh.</p>`;
   } else if (nowWin) h += `<p class="note">Praegu ongi soodsaim aeg alustada.</p>`;
   h += `<p class="note">Arvestatud on ainult börsihinda koos käibemaksuga. Fikseeritud hinnaga kuul ei muuda ajastus energiahinda, Võrk 4 võrgutasu on öösel (tööpäeviti 22–7) ja nädalavahetusel veel umbes 2 s/kWh odavam.</p>`;
   out.innerHTML = h;
