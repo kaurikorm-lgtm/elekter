@@ -1,0 +1,87 @@
+{
+  "updated": "2026-11-09",
+  "futuresDate": "6.–9.11.2026",
+  "futuresSource": {
+    "name": "Euronext Nord Pool sulgemishinnad (sahkotutka.fi, parassahko.fi kaudu)",
+    "url": "https://sahkotutka.fi/futuurit"
+  },
+  "vat": 1.24,
+  "eeSpread": {
+    "winter": [20, 30],
+    "summer": [10, 20],
+    "note": "Eesti hind = Soome futuur + hinnanguline Eesti–Soome hinnavahe. Vahe sõltub Estlinki kaablite koormusest ja võib üksikutel tundidel olla 0 € või üle 100 €/MWh."
+  },
+  "profileFactor": { "winter": 1.13, "summer": 0.9 },
+  "months": [
+    { "period": "2026-12", "label": "Dets 2026", "system": 130.13, "fi": 86.13 },
+    { "period": "2027-01", "label": "Jaan 2027", "system": 139.50, "fi": 117.62 },
+    { "period": "2027-02", "label": "Veebr 2027", "system": 138.00, "fi": 121.99 },
+    { "period": "2027-03", "label": "Märts 2027", "system": 105.97, "fi": 86.17 },
+    { "period": "2027-04", "label": "Apr 2027", "system": 88.00, "fi": 74.13 },
+    { "period": "2027-05", "label": "Mai 2027", "system": 47.67, "fi": 33.80 }
+  ],
+  "quarters": [
+    { "label": "Q1 2027", "winter": true, "system": 127.15, "fi": 107.35 },
+    { "label": "Q2 2027", "winter": false, "system": 57.05, "fi": 43.18 },
+    { "label": "Q3 2027", "winter": false, "system": 38.25, "fi": 33.50 },
+    { "label": "Q4 2027", "winter": true, "system": 64.75, "fi": 61.13 }
+  ],
+  "alexela": {
+    "nextMonth": "Detsember 2026",
+    "nextPrice": null,
+    "publishNote": "Alexela avaldab detsembri baashinna hiljemalt 20.11.2026. Valik tuleb teha äpis hiljemalt 28.11.",
+    "known": [
+      { "month": "November 2026", "price": 14.9 }
+    ],
+    "margin": 0.46,
+    "url": "https://www.alexela.ee/et/eraklient/elekter/vali-ise"
+  },
+  "history": [
+    { "date": "2026-10-20", "approx": true, "fi": { "2026-12": 84, "2027-01": 120, "2027-02": 120 } },
+    { "date": "2026-11-06", "approx": false, "fi": { "2026-12": 86.13, "2027-01": 117.62, "2027-02": 121.99 } }
+  ],
+  "factors": [
+    {
+      "title": "Põhjamaade veehoidlad",
+      "status": "risk",
+      "text": "Septembris olid Põhjamaade veehoidlad sügise eel 30 aasta madalaimal tasemel. Seetõttu on Põhjamaade süsteemihinna futuurid talvekuudeks umbes 130–140 €/MWh. Vihmane sügis võib olukorda parandada.",
+      "source": "ERR, Tiit Hõbejõgi, 16.09.2026",
+      "url": "https://www.err.ee/1610139388/tiit-hobejogi-elektrituru-suurim-mojutaja-on-jarjest-enam-ilm"
+    },
+    {
+      "title": "Maagaasi hind",
+      "status": "risk",
+      "text": "Gaas on aastaga kallinenud umbes 2,5 korda. ELi gaasihoidlad olid enne sügist 67% täis, mis on madalaim tase alates 2011. aastast. Gaasijaama tootmiskulu on umbes 180 €/MWh, ja külmadel tippudel määravad hinna just gaasijaamad.",
+      "source": "ERR, 16.09.2026",
+      "url": "https://www.err.ee/1610139388/tiit-hobejogi-elektrituru-suurim-mojutaja-on-jarjest-enam-ilm"
+    },
+    {
+      "title": "Estlink 1 ja 2 (Soome–Eesti kaablid)",
+      "status": "watch",
+      "text": "Estlink 2 (650 MW) oli rikke tõttu väljas jaanuarist septembrini 2026, parandus lõpetati 12.09. Kui mõni kaabel talvel välja lülitub, kasvab Eesti ja Soome hinnavahe järsult.",
+      "source": "CEEnergyNews",
+      "url": "https://ceenergynews.com/electricity/estlink-2-interconnection-repairs-to-be-completed-on-12-september/"
+    },
+    {
+      "title": "Olkiluoto 3 tuumajaam",
+      "status": "watch",
+      "text": "OL3 annab umbes 14% Soome elektritoodangust. Plaaniline hooldusseisak toimus septembris–oktoobris 2026. Ootamatu seisak talvel tõstaks Soome ja Eesti hinda.",
+      "source": "TVO pressiteade, 2.04.2026",
+      "url": "https://mb.cision.com/Main/1401/4330539/4021516.pdf"
+    },
+    {
+      "title": "Uued tuulepargid ja akud",
+      "status": "ok",
+      "text": "Piirkonda on lisandunud umbes 900 MW tuuleparke ja 500 MW akusalvesteid. Tuulisel talvel aitavad need hinda all hoida, akud ühtlustavad tunnihindu.",
+      "source": "ERR, 16.09.2026",
+      "url": "https://www.err.ee/1610139388/tiit-hobejogi-elektrituru-suurim-mojutaja-on-jarjest-enam-ilm"
+    },
+    {
+      "title": "Ilm",
+      "status": "watch",
+      "text": "Suurim üksik tegur. Külm ja tuulevaikne periood tõstab hinda kõige rohkem, pehme ja tuuline talv langetab. Eelmisel talvel läks jaanuar–veebruar futuuridest kallimaks, detsember odavamaks.",
+      "source": "ERR, 16.09.2026",
+      "url": "https://www.err.ee/1610139388/tiit-hobejogi-elektrituru-suurim-mojutaja-on-jarjest-enam-ilm"
+    }
+  ]
+}
