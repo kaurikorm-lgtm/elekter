@@ -215,7 +215,7 @@ function render(D) {
   // Factors
   const badge = { risk: "Tõstab hinda", watch: "Jälgi", ok: "Langetab hinda" };
   document.getElementById("factors").innerHTML = D.factors.map(f =>
-    `<div class="factor ${f.status}"><h3>${f.title} <span class="badge">${badge[f.status]}</span></h3>${f.date ? `<div class="src" style="margin:-2px 0 4px">${fmtDate(f.date)}</div>` : ""}<p>${f.text}</p><div class="src">Allikas: <a href="${f.url}" rel="noopener">${f.source}</a>${f.date ? `, ${fmtDate(f.date)}` : ""}</div></div>`).join("");
+    `<div class="factor ${f.status}"><h3>${f.title} <span class="badge">${badge[f.status]}</span></h3><p>${f.text}</p><div class="src">Allikas: <a href="${f.url}" rel="noopener">${f.source}</a>${f.date ? `, ${fmtDate(f.date)}` : ""}</div></div>`).join("");
 
   document.getElementById("method").textContent =
     `Eesti futuuridega kaubeldakse vähe, seega on prognoos arvutatud nii: Soome futuur (Põhjamaade süsteemihind + Soome EPAD) + Eesti–Soome hinnavahe, talvel ${D.eeSpread.winter[0]}–${D.eeSpread.winter[1]} ja suvel ${D.eeSpread.summer[0]}–${D.eeSpread.summer[1]} €/MWh, millele lisandub 24% käibemaks. ${D.eeSpread.note}`;
