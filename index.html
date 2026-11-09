@@ -63,6 +63,10 @@
   .form label { display: flex; flex-direction: column; gap: 4px; font-size: .85rem; color: var(--text-2); }
   .form select, .form input { font: inherit; font-size: 1rem; color: var(--text); background: var(--bg);
     border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; min-height: 42px; }
+  .seg { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .seg button { font: inherit; font-size: .85rem; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text-2); cursor: pointer; min-height: 36px; }
+  .seg button[aria-pressed="true"] { background: var(--series); border-color: var(--series); color: #fff; }
   .best { background: var(--bg); border-radius: 10px; padding: 12px 14px; }
   .best .big { font-size: 1.35rem; font-weight: 650; }
 </style>
@@ -76,6 +80,9 @@
     <h2>Börsihind: eelmised 72 h ja järgmised 48 h</h2>
     <p class="note" style="margin-top:-6px">Eesti hinnapiirkond, s/kWh koos 24% käibemaksuga, ilma marginaali ja võrgutasuta. Järgmise päeva hinnad avaldatakse umbes kell 14.</p>
     <div class="kpis" id="spotKpis" style="margin-bottom:12px"></div>
+    <div class="seg" id="spotRange" role="group" aria-label="Ajavahemik">
+      <button data-r="all" aria-pressed="true">Kõik</button><button data-r="past24">Eelmised 24 h</button><button data-r="today">Täna</button><button data-r="tomorrow">Homme</button><button data-r="next12">Järgmised 12 h</button>
+    </div>
     <div class="chart-wrap" id="spotWrap">
       <svg id="spot" role="img" aria-label="Eesti börsihind viimased 72 ja järgmised 48 tundi" width="100%"></svg>
       <div class="tip" id="spotTip"></div>
@@ -263,6 +270,12 @@ fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
   const pts = (P.ee || []).map(([t, p]) => ({ t, v: p * 1.24 / 10 }));
   if (!pts.length) { document.getElementById("spotNote").textContent = "Börsihindu ei õnnestunud laadida" + (P.error ? ` (${P.error})` : "") + "."; return; }
   window._spot = pts; drawSpot(pts);
+  document.querySelectorAll("#spotRange button").forEach(b => b.addEventListener("click", () => {
+    window._range = b.dataset.r;
+    document.querySelectorAll("#spotRange button").forEach(o => o.setAttribute("aria-pressed", o === b));
+    document.getElementById("spotTip").style.opacity = 0;
+    drawSpot(window._spot);
+  }));
   ["plDur", "plWithin"].forEach(id => document.getElementById(id).addEventListener("input", plan));
   plan();
   const now = Date.now() / 1000;
@@ -319,30 +332,51 @@ function plan() {
   out.innerHTML = h;
 }
 
-function drawSpot(pts) {
+function spotRange(all) {
+  const now = Date.now() / 1000, r = window._range || "all";
+  const midnight = off => { const k = dayKey(now + off * 86400); const t = all.find(p => dayKey(p.t) === k); return t ? t.t : null; };
+  const lastT = all[all.length - 1].t + 900;
+  if (r === "today") { const a = midnight(0); return [a ?? now - 12 * 3600, (midnight(1) ?? a + 86400)]; }
+  if (r === "tomorrow") { const a = midnight(1); return a ? [a, a + 86400] : [now, lastT]; }
+  if (r === "next12") return [Math.floor(now / 900) * 900 - 3600, Math.floor(now / 900) * 900 + 12 * 3600];
+  if (r === "past24") return [now - 24 * 3600, now + 1800];
+  return [Math.min(all[0].t, now - 72 * 3600), Math.max(now + 48 * 3600, lastT)];
+}
+
+function drawSpot(allPts) {
   const svg = document.getElementById("spot"), wrap = document.getElementById("spotWrap"), tip = document.getElementById("spotTip");
-  const W = Math.max(320, wrap.clientWidth), H = 240, m = { t: 14, r: 8, b: 30, l: 36 };
+  const W = Math.max(320, wrap.clientWidth), H = (window._range && window._range !== "all") ? 300 : 240, m = { t: 14, r: 8, b: 30, l: 36 };
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("height", H);
   const now = Date.now() / 1000;
-  const t0 = Math.min(pts[0].t, now - 72 * 3600), t1 = Math.max(now + 48 * 3600, pts[pts.length - 1].t + 900);
-  const vmax = Math.max(5, ...pts.map(p => p.v)), vmin = Math.min(0, ...pts.map(p => p.v));
-  const step = vmax > 40 ? 10 : 5, top = Math.ceil(vmax / step) * step, bot = Math.floor(vmin / step) * step;
+  const [t0, t1] = spotRange(allPts);
+  const pts = allPts.filter(p => p.t + 900 > t0 && p.t < t1);
+  const vis = pts.length ? pts : allPts;
+  const span = t1 - t0, zoomed = span <= 30 * 3600;
+  const vmax = Math.max(1, ...vis.map(p => p.v)), vmin = Math.min(0, ...vis.map(p => p.v));
+  const step = vmax > 40 ? 10 : vmax > 15 ? 5 : vmax > 6 ? 2 : 1, top = Math.ceil(vmax / step) * step, bot = Math.floor(vmin / step) * step;
   const x = t => m.l + (W - m.l - m.r) * (t - t0) / (t1 - t0);
   const y = v => m.t + (H - m.t - m.b) * (top - v) / (top - bot);
-  let s = `<rect x="${x(now)}" y="${m.t}" width="${x(t1) - x(now)}" height="${H - m.t - m.b}" fill="var(--grid)" opacity=".5"/>`;
+  window._spotScale = { x, y, t0, t1, W, m, pts };
+  let s = `<defs><clipPath id="spotClip"><rect x="${m.l}" y="0" width="${W - m.l - m.r}" height="${H}"/></clipPath></defs><g clip-path="url(#spotClip)">`;
+  if (now < t1) s += `<rect x="${x(Math.max(now, t0))}" y="${m.t}" width="${x(t1) - x(Math.max(now, t0))}" height="${H - m.t - m.b}" fill="var(--grid)" opacity=".5"/>`;
   if (window._plan) s += `<rect x="${x(window._plan.t0)}" y="${m.t}" width="${Math.max(2, x(window._plan.t1) - x(window._plan.t0))}" height="${H - m.t - m.b}" fill="var(--ok)" opacity=".18"/><text x="${x(window._plan.t0) + 2}" y="${H - m.b - 4}" style="fill:var(--ok);font-size:11px">soodsaim</text>`;
+  s += `</g>`;
   for (let v = bot; v <= top; v += step) s += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${m.l - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
-  // päevade piirid
-  const seen = new Set();
-  for (let t = Math.floor(t0 / 3600) * 3600; t < t1; t += 3600) {
+  // aja telg: kogu vaates päevad, suurendatud vaates tunnid
+  const seen = new Set(), every = W < 500 ? 3 : 2;
+  for (let t = Math.ceil(t0 / 3600) * 3600; t < t1; t += 3600) {
     const hh = +new Date(t * 1000).toLocaleString("en-GB", { timeZone: tz, hour: "2-digit", hourCycle: "h23" });
     const dk = dayKey(t);
-    if (hh === 0 && !seen.has(dk)) { seen.add(dk); s += `<line x1="${x(t)}" x2="${x(t)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--border)"/><text x="${x(t + 43200)}" y="${H - 10}" text-anchor="middle">${dmy(t)}</text>`; }
+    if (zoomed) {
+      if (hh === 0) s += `<line x1="${x(t)}" x2="${x(t)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--text-2)" opacity=".5"/><text x="${x(t) + 3}" y="${m.t + 10}" text-anchor="start">${dmy(t)}</text>`;
+      else if (hh % every === 0) s += `<line x1="${x(t)}" x2="${x(t)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--grid)"/>`;
+      if (hh % every === 0) s += `<text x="${x(t)}" y="${H - 10}" text-anchor="middle">${String(hh).padStart(2, "0")}</text>`;
+    } else if (hh === 0 && !seen.has(dk)) { seen.add(dk); s += `<line x1="${x(t)}" x2="${x(t)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--border)"/><text x="${x(t + 43200)}" y="${H - 10}" text-anchor="middle">${dmy(t)}</text>`; }
   }
   let d = "";
-  pts.forEach((p, i) => { const X0 = x(p.t), X1 = x(p.t + 900), Y = y(p.v); d += (i === 0 || pts[i - 1].t + 900 !== p.t ? `M${X0},${Y}` : `V${Y}`) + `H${X1}`; });
+  pts.forEach((p, i) => { const X0 = Math.max(m.l, x(p.t)), X1 = Math.min(W - m.r, x(p.t + 900)), Y = y(p.v); d += (i === 0 || pts[i - 1].t + 900 !== p.t ? `M${X0},${Y}` : `V${Y}`) + `H${X1}`; });
   s += `<path d="${d}" fill="none" stroke="var(--series)" stroke-width="2" stroke-linejoin="round"/>`;
-  s += `<line x1="${x(now)}" x2="${x(now)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--text)" stroke-dasharray="3 3"/><text x="${x(now) + 4}" y="${m.t + 10}" style="fill:var(--text)">praegu</text>`;
+  if (now > t0 && now < t1) s += `<line x1="${x(now)}" x2="${x(now)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--text)" stroke-dasharray="3 3"/><text x="${x(now) + 4}" y="${m.t + (zoomed ? 24 : 10)}" style="fill:var(--text)">praegu</text>`;
   s += `<line id="spotX" y1="${m.t}" y2="${H - m.b}" stroke="var(--text-2)" opacity="0"/><circle id="spotDot" r="4" fill="var(--series)" stroke="var(--surface)" stroke-width="2" opacity="0"/>`;
   s += `<rect id="spotHit" x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}" fill="transparent"/>`;
   svg.innerHTML = s;
