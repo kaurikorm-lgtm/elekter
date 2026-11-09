@@ -89,7 +89,9 @@
       <svg id="spot" role="img" aria-label="Eesti börsihind viimased 72 ja järgmised 48 tundi" width="100%"></svg>
       <div class="tip" id="spotTip"></div>
     </div>
-    <div class="legend"><span><i style="background:var(--series)"></i>Eesti</span><span><i style="background:var(--s-fi)"></i>Soome</span><span><i style="background:var(--s-lv)"></i>Läti ja Leedu</span></div>
+    <div class="legend" id="zoneToggles"><span><i style="background:var(--series)"></i>Eesti</span>
+      <label style="cursor:pointer"><input type="checkbox" data-z="fi"> <i style="background:var(--s-fi)"></i>Soome</label>
+      <label style="cursor:pointer"><input type="checkbox" data-z="lv"> <i style="background:var(--s-lv)"></i>Läti ja Leedu</label></div>
     <p class="note" id="spotNote"></p>
     <div id="planner" style="border-top:1px solid var(--border);margin-top:14px;padding-top:14px">
       <h2 style="margin-bottom:8px">Millal on kõige soodsam?</h2>
@@ -272,6 +274,7 @@ fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
   window._zones = { fi: conv(P.fi), lv: conv(P.lv) };
   if (!pts.length) { document.getElementById("spotNote").textContent = "Börsihindu ei õnnestunud laadida" + (P.error ? ` (${P.error})` : "") + "."; return; }
   window._spot = pts; drawSpot(pts);
+  document.querySelectorAll("#zoneToggles input").forEach(c => c.addEventListener("change", () => drawSpot(window._spot)));
   document.querySelectorAll("#spotRange button").forEach(b => b.addEventListener("click", () => {
     window._range = b.dataset.r;
     document.querySelectorAll("#spotRange button").forEach(o => o.setAttribute("aria-pressed", o === b));
@@ -345,6 +348,12 @@ function plan() {
   out.innerHTML = h;
 }
 
+function visZones() {
+  const Z = window._zones || {}, out = {};
+  document.querySelectorAll("#zoneToggles input:checked").forEach(c => { if (Z[c.dataset.z]) out[c.dataset.z] = Z[c.dataset.z]; });
+  return out;
+}
+
 function spotRange(all) {
   const now = Date.now() / 1000, r = window._range || "all";
   const midnight = off => { const k = dayKey(now + off * 86400); const t = all.find(p => dayKey(p.t) === k); return t ? t.t : null; };
@@ -365,7 +374,7 @@ function drawSpot(allPts) {
   const pts = allPts.filter(p => p.t + 900 > t0 && p.t < t1);
   const vis = pts.length ? pts : allPts;
   const span = t1 - t0, zoomed = span <= 30 * 3600;
-  const allVis = vis.concat(...Object.values(window._zones || {}).map(a => a.filter(p => p.t + 900 > t0 && p.t < t1)));
+  const allVis = vis.concat(...Object.values(visZones()).map(a => a.filter(p => p.t + 900 > t0 && p.t < t1)));
   const vmax = Math.max(1, ...allVis.map(p => p.v)), vmin = Math.min(0, ...allVis.map(p => p.v));
   const step = vmax > 40 ? 10 : vmax > 15 ? 5 : vmax > 6 ? 2 : 1, top = Math.ceil(vmax / step) * step, bot = Math.floor(vmin / step) * step;
   const x = t => m.l + (W - m.l - m.r) * (t - t0) / (t1 - t0);
@@ -390,7 +399,7 @@ function drawSpot(allPts) {
   let d = "";
   pts.forEach((p, i) => { const X0 = Math.max(m.l, x(p.t)), X1 = Math.min(W - m.r, x(p.t + 900)), Y = y(p.v); d += (i === 0 || pts[i - 1].t + 900 !== p.t ? `M${X0},${Y}` : `V${Y}`) + `H${X1}`; });
   const zpath = arr => { let z = ""; arr.forEach((p, i) => { const X0 = Math.max(m.l, x(p.t)), X1 = Math.min(W - m.r, x(p.t + 900)), Y = y(p.v); z += (i === 0 || arr[i - 1].t + 900 !== p.t ? `M${X0},${Y}` : `V${Y}`) + `H${X1}`; }); return z; };
-  const Z = window._zones || {}, inR = a => (a || []).filter(p => p.t + 900 > t0 && p.t < t1);
+  const Z = visZones(), inR = a => (a || []).filter(p => p.t + 900 > t0 && p.t < t1);
   if (Z.lv && Z.lv.length) s += `<path d="${zpath(inR(Z.lv))}" fill="none" stroke="var(--s-lv)" stroke-width="1.5" opacity=".9"/>`;
   if (Z.fi && Z.fi.length) s += `<path d="${zpath(inR(Z.fi))}" fill="none" stroke="var(--s-fi)" stroke-width="1.5" opacity=".9"/>`;
   s += `<path d="${d}" fill="none" stroke="var(--series)" stroke-width="2" stroke-linejoin="round"/>`;
@@ -406,7 +415,8 @@ function drawSpot(allPts) {
     const X = x(p.t + 450); cx.setAttribute("x1", X); cx.setAttribute("x2", X); cx.setAttribute("opacity", 1);
     dot.setAttribute("cx", X); dot.setAttribute("cy", y(p.v)); dot.setAttribute("opacity", 1);
     const zv = k => { const q = ((window._zones || {})[k] || []).find(o => o.t === p.t); return q ? fmt(q.v, 2) : "–"; };
-    tip.innerHTML = `<b>${dmy(p.t)} ${hm(p.t)}–${hm(p.t + 900)}</b><br>Eesti <b>${fmt(p.v, 2)}</b> s/kWh<br>Soome ${zv("fi")} · Läti/Leedu ${zv("lv")}`;
+    const VZ = visZones(), extra = [VZ.fi && `Soome ${zv("fi")}`, VZ.lv && `Läti/Leedu ${zv("lv")}`].filter(Boolean).join(" · ");
+    tip.innerHTML = `<b>${dmy(p.t)} ${hm(p.t)}–${hm(p.t + 900)}</b><br>${extra ? "Eesti " : ""}<b>${fmt(p.v, 2)}</b> s/kWh${extra ? "<br>" + extra : ""}`;
     tip.style.opacity = 1;
     let left = X * sc - tip.offsetWidth / 2; left = Math.max(0, Math.min(left, wrap.clientWidth - tip.offsetWidth));
     tip.style.left = left + "px"; tip.style.top = Math.max(0, y(p.v) * sc - tip.offsetHeight - 10) + "px";
