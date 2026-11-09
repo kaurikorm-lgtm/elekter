@@ -133,6 +133,13 @@
     <div class="scroll"><table id="tblQuarters"></table></div>
   </section>
 
+  <section class="card" id="spreadCard" hidden>
+    <h2>Tegelik hinnavahe Soomega</h2>
+    <p class="note" style="margin-top:-6px">Päev-ette hindade kuukeskmised, €/MWh ilma käibemaksuta. „Eesti erines” näitab, kui suure osa ajast oli Eesti hind Soome omast kõrgem ehk kaablid Soome suunal olid täis.</p>
+    <p id="spreadSummary"></p>
+    <div class="scroll"><table id="tblSpread"></table></div>
+  </section>
+
   <section class="card">
     <h2>Kuidas prognoos on muutunud</h2>
     <p class="note" style="margin-top:-6px">Soome futuur, €/MWh ilma käibemaksuta.</p>
@@ -267,6 +274,19 @@ const tz = "Europe/Tallinn";
 const dayKey = t => new Date(t * 1000).toLocaleDateString("sv-SE", { timeZone: tz });
 const hm = t => new Date(t * 1000).toLocaleTimeString("et-EE", { timeZone: tz, hour: "2-digit", minute: "2-digit" });
 const dmy = t => new Date(t * 1000).toLocaleDateString("et-EE", { timeZone: tz, weekday: "short", day: "numeric", month: "numeric" });
+
+fetch("spread.json?v=" + Date.now()).then(r => r.ok ? r.json() : null).then(S => {
+  if (!S || !S.months || !S.months.length) return;
+  const mName = m => { const [y, mo] = m.split("-"); return ["jaan","veebr","märts","apr","mai","juuni","juuli","aug","sept","okt","nov","dets"][+mo - 1] + " " + y; };
+  const L = S.last30;
+  if (L) document.getElementById("spreadSummary").innerHTML =
+    `Viimase 30 päeva keskmine: Eesti <b>${fmt(L.ee)}</b>, Soome <b>${fmt(L.fi)}</b>, Läti/Leedu ${fmt(L.lv)} €/MWh. Eesti oli Soomest keskmiselt <b>${fmt(L.spread)} €/MWh</b> kallim ja Soome hinnast erines ${Math.round(L.decoupled * 100)}% ajast.` +
+    (window._D ? ` Prognoos eeldab talvel ${window._D.eeSpread.winter[0]}–${window._D.eeSpread.winter[1]} €/MWh.` : "");
+  document.getElementById("tblSpread").innerHTML =
+    `<thead><tr><th>Kuu</th><th>Eesti</th><th>Soome</th><th>Läti/Leedu</th><th>Vahe EE–FI</th><th>Eesti erines</th></tr></thead><tbody>` +
+    S.months.slice().reverse().map(r => `<tr><td>${mName(r.month)}${r.days < 28 ? " *" : ""}</td><td>${fmt(r.ee)}</td><td>${fmt(r.fi)}</td><td>${fmt(r.lv)}</td><td><b>${fmt(r.spread)}</b></td><td>${Math.round(r.decoupled * 100)}%</td></tr>`).join("") + "</tbody>";
+  document.getElementById("spreadCard").hidden = false;
+}).catch(() => {});
 
 fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
   const conv = a => (a || []).map(([t, p]) => ({ t, v: p * 1.24 / 10 }));
