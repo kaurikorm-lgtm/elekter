@@ -11,6 +11,7 @@
     --text: #0b0b0b; --text-2: #52514e; --muted: #7a7974;
     --series: #2a78d6; --series-soft: #cde2fb; --grid: #ebeae6;
     --risk: #c43c3b; --watch: #b07700; --ok: #0a8a0a;
+    --s-fi: #1baf7a; --s-lv: #eb6834;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -18,6 +19,7 @@
       --text: #f0efec; --text-2: #c3c2b7; --muted: #8f8e88;
       --series: #3987e5; --series-soft: #184f95; --grid: #2a2a28;
       --risk: #e66767; --watch: #e0a530; --ok: #3fbf3f;
+      --s-fi: #199e70; --s-lv: #d95926;
     }
   }
   * { box-sizing: border-box; }
@@ -87,6 +89,7 @@
       <svg id="spot" role="img" aria-label="Eesti börsihind viimased 72 ja järgmised 48 tundi" width="100%"></svg>
       <div class="tip" id="spotTip"></div>
     </div>
+    <div class="legend"><span><i style="background:var(--series)"></i>Eesti</span><span><i style="background:var(--s-fi)"></i>Soome</span><span><i style="background:var(--s-lv)"></i>Läti ja Leedu</span></div>
     <p class="note" id="spotNote"></p>
     <div id="planner" style="border-top:1px solid var(--border);margin-top:14px;padding-top:14px">
       <h2 style="margin-bottom:8px">Millal on kõige soodsam?</h2>
@@ -264,7 +267,9 @@ const hm = t => new Date(t * 1000).toLocaleTimeString("et-EE", { timeZone: tz, h
 const dmy = t => new Date(t * 1000).toLocaleDateString("et-EE", { timeZone: tz, weekday: "short", day: "numeric", month: "numeric" });
 
 fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
-  const pts = (P.ee || []).map(([t, p]) => ({ t, v: p * 1.24 / 10 }));
+  const conv = a => (a || []).map(([t, p]) => ({ t, v: p * 1.24 / 10 }));
+  const pts = conv(P.ee);
+  window._zones = { fi: conv(P.fi), lv: conv(P.lv) };
   if (!pts.length) { document.getElementById("spotNote").textContent = "Börsihindu ei õnnestunud laadida" + (P.error ? ` (${P.error})` : "") + "."; return; }
   window._spot = pts; drawSpot(pts);
   document.querySelectorAll("#spotRange button").forEach(b => b.addEventListener("click", () => {
@@ -296,6 +301,9 @@ fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
     { l: "Täna keskmine", v: tToday.length ? `${fmt(avg(tToday))} s` : "–", n: "s/kWh KM-ga" },
     { l: "Homme keskmine", v: tTom.length >= 90 ? `${fmt(avg(tTom))} s` : "pole veel", n: tTom.length >= 90 ? "s/kWh KM-ga" : "avaldatakse ~kell 14" },
     cheap && { l: "Odavaim tund ees", v: `${fmt(cheap.v)} s`, n: `${dmy(cheap.t)} kell ${hm(cheap.t)}` },
+    (() => { const fi = new Map(window._zones.fi.map(p => [p.t, p.v])), past = pts.filter(p => p.t <= now && fi.has(p.t));
+      if (!past.length) return null; const dlt = past.reduce((a, p) => a + p.v - fi.get(p.t), 0) / past.length;
+      return { l: "Vahe Soomega (72 h)", v: `${dlt >= 0 ? "+" : ""}${fmt(dlt)} s`, n: "Eesti miinus Soome, keskmine" }; })(),
   ].filter(Boolean);
   document.getElementById("spotKpis").innerHTML = k.map(x =>
     `<div class="kpi"><div class="l">${x.l}</div><div class="v">${x.v}</div><div class="n">${x.n}</div></div>`).join("");
@@ -357,7 +365,8 @@ function drawSpot(allPts) {
   const pts = allPts.filter(p => p.t + 900 > t0 && p.t < t1);
   const vis = pts.length ? pts : allPts;
   const span = t1 - t0, zoomed = span <= 30 * 3600;
-  const vmax = Math.max(1, ...vis.map(p => p.v)), vmin = Math.min(0, ...vis.map(p => p.v));
+  const allVis = vis.concat(...Object.values(window._zones || {}).map(a => a.filter(p => p.t + 900 > t0 && p.t < t1)));
+  const vmax = Math.max(1, ...allVis.map(p => p.v)), vmin = Math.min(0, ...allVis.map(p => p.v));
   const step = vmax > 40 ? 10 : vmax > 15 ? 5 : vmax > 6 ? 2 : 1, top = Math.ceil(vmax / step) * step, bot = Math.floor(vmin / step) * step;
   const x = t => m.l + (W - m.l - m.r) * (t - t0) / (t1 - t0);
   const y = v => m.t + (H - m.t - m.b) * (top - v) / (top - bot);
@@ -380,6 +389,10 @@ function drawSpot(allPts) {
   }
   let d = "";
   pts.forEach((p, i) => { const X0 = Math.max(m.l, x(p.t)), X1 = Math.min(W - m.r, x(p.t + 900)), Y = y(p.v); d += (i === 0 || pts[i - 1].t + 900 !== p.t ? `M${X0},${Y}` : `V${Y}`) + `H${X1}`; });
+  const zpath = arr => { let z = ""; arr.forEach((p, i) => { const X0 = Math.max(m.l, x(p.t)), X1 = Math.min(W - m.r, x(p.t + 900)), Y = y(p.v); z += (i === 0 || arr[i - 1].t + 900 !== p.t ? `M${X0},${Y}` : `V${Y}`) + `H${X1}`; }); return z; };
+  const Z = window._zones || {}, inR = a => (a || []).filter(p => p.t + 900 > t0 && p.t < t1);
+  if (Z.lv && Z.lv.length) s += `<path d="${zpath(inR(Z.lv))}" fill="none" stroke="var(--s-lv)" stroke-width="1.5" opacity=".9"/>`;
+  if (Z.fi && Z.fi.length) s += `<path d="${zpath(inR(Z.fi))}" fill="none" stroke="var(--s-fi)" stroke-width="1.5" opacity=".9"/>`;
   s += `<path d="${d}" fill="none" stroke="var(--series)" stroke-width="2" stroke-linejoin="round"/>`;
   if (now > t0 && now < t1) s += `<line x1="${x(now)}" x2="${x(now)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--text)" stroke-dasharray="3 3"/><text x="${x(now) + 4}" y="${m.t + (zoomed ? 24 : 10)}" style="fill:var(--text)">praegu</text>`;
   s += `<line id="spotX" y1="${m.t}" y2="${H - m.b}" stroke="var(--text-2)" opacity="0"/><circle id="spotDot" r="4" fill="var(--series)" stroke="var(--surface)" stroke-width="2" opacity="0"/>`;
@@ -392,7 +405,8 @@ function drawSpot(allPts) {
     const p = pts.find(q => t >= q.t && t < q.t + 900); if (!p) { tip.style.opacity = 0; cx.setAttribute("opacity", 0); dot.setAttribute("opacity", 0); return; }
     const X = x(p.t + 450); cx.setAttribute("x1", X); cx.setAttribute("x2", X); cx.setAttribute("opacity", 1);
     dot.setAttribute("cx", X); dot.setAttribute("cy", y(p.v)); dot.setAttribute("opacity", 1);
-    tip.innerHTML = `<b>${dmy(p.t)} ${hm(p.t)}–${hm(p.t + 900)}</b><br>${fmt(p.v, 2)} s/kWh`;
+    const zv = k => { const q = ((window._zones || {})[k] || []).find(o => o.t === p.t); return q ? fmt(q.v, 2) : "–"; };
+    tip.innerHTML = `<b>${dmy(p.t)} ${hm(p.t)}–${hm(p.t + 900)}</b><br>Eesti <b>${fmt(p.v, 2)}</b> s/kWh<br>Soome ${zv("fi")} · Läti/Leedu ${zv("lv")}`;
     tip.style.opacity = 1;
     let left = X * sc - tip.offsetWidth / 2; left = Math.max(0, Math.min(left, wrap.clientWidth - tip.offsetWidth));
     tip.style.left = left + "px"; tip.style.top = Math.max(0, y(p.v) * sc - tip.offsetHeight - 10) + "px";

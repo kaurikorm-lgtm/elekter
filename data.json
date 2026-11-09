@@ -8,14 +8,14 @@
   "vat": 1.24,
   "eeSpread": {
     "winter": [
-      20,
-      30
+      40,
+      100
     ],
     "summer": [
       10,
-      20
+      30
     ],
-    "note": "Eesti hind = Soome futuur + hinnanguline Eesti–Soome hinnavahe. Vahe sõltub Estlinki kaablite koormusest ja võib üksikutel tundidel olla 0 € või üle 100 €/MWh."
+    "note": "Hinnavahe sõltub sellest, kas Soome–Eesti kaablid (Estlink) on täis ja kui palju elektrit liigub edasi Lätti ja Leetu. Novembri alguses oli Eesti hind Soomest mõnel päeval üle 100 €/MWh kõrgem, seega on vahemik lai."
   },
   "profileFactor": {
     "winter": 1.13,
@@ -120,17 +120,40 @@
   ],
   "factors": [
     {
-      "title": "Põhjamaade veehoidlad",
+      "title": "Eesti hind kordades kõrgem kui Soomes",
       "status": "risk",
-      "text": "Septembris olid Põhjamaade veehoidlad sügise eel 30 aasta madalaimal tasemel. Seetõttu on Põhjamaade süsteemihinna futuurid talvekuudeks umbes 130–140 €/MWh. Vihmane sügis võib olukorda parandada.",
-      "source": "ERR",
-      "url": "https://www.err.ee/1610139388/tiit-hobejogi-elektrituru-suurim-mojutaja-on-jarjest-enam-ilm",
-      "date": "2026-09-16"
+      "text": "Novembri alguses on Eesti börsihind olnud Soomest mitu korda kõrgem, kuigi Estlinki kaablid töötavad täisvõimsusel. Põhjused on Baltikumi sisesed ülekandepiirangud, Eesti suurte elektrijaamade hooldused, tuulevaikne ilm ja kallis gaas. 9. novembril oli Eesti päeva keskmine 202 €/MWh (Soomes 15), 10. novembriks 305 €/MWh (Soomes 108).",
+      "source": "Postimees; Lõunaeestlane",
+      "url": "https://majandus.postimees.ee/8577420/elektri-borsihind-on-juba-praegu-talviselt-krobe-mis-saab-siis-kui-pakane-paukuma-hakkab",
+      "date": "2026-11-09"
     },
     {
-      "title": "Maagaasi hind",
+      "title": "Läti ja Leedu hinnad",
       "status": "risk",
-      "text": "Gaas on aastaga kallinenud umbes 2,5 korda. ELi gaasihoidlad olid enne sügist 67% täis, mis on madalaim tase alates 2011. aastast. Gaasijaama tootmiskulu on umbes 180 €/MWh, ja külmadel tippudel määravad hinna just gaasijaamad.",
+      "text": "Kui Eesti vajab rohkem elektrit, kui Soomest kaablite kaudu tuleb ja ise toodetakse, kujuneb hind koos Läti ja Leeduga, kus elekter on tavaliselt kallim. Septembris oli keskmine hind Lätis 108,7, Leedus 108,6 ja Eestis 75,0 €/MWh.",
+      "source": "AST (Läti põhivõrk), septembri 2026 turuülevaade",
+      "url": "https://www.ast.lv/en/electricity-market-review"
+    },
+    {
+      "title": "Eesti–Läti ühenduse piirangud",
+      "status": "watch",
+      "text": "Osa Eesti–Läti ülekandevõimsusest on reserveeritud Balti sagedusreservide turule, mistõttu börsikaubanduseks jääb vähem võimsust. See võib hinnad Eestis ja Lätis-Leedus lahku lüüa mõlemas suunas.",
+      "source": "ERR",
+      "url": "https://www.err.ee/1610040082/eestlaste-edu-sagedusturul-karistas-suureks-elektrihinna-vahe-lati-leeduga",
+      "date": "2026-05-28"
+    },
+    {
+      "title": "Maagaasi hind ja varud",
+      "status": "risk",
+      "text": "Euroopa gaasi hind (TTF) tõusis 28. oktoobril päevasiseselt üle 100 €/MWh. ELi gaasihoidlad olid 26. oktoobri seisuga 74,9% täis, mis on selle aastaaja madalaim tase alates 2011. aastast. Külmadel tippudel määravad elektri hinna sageli gaasijaamad.",
+      "source": "S&P Global",
+      "url": "https://www.spglobal.com/energy/en/news-research/latest-news/natural-gas/102826-european-gas-price-tops-100mwh-intraday-ice",
+      "date": "2026-10-28"
+    },
+    {
+      "title": "Põhjamaade veehoidlad",
+      "status": "risk",
+      "text": "Põhjamaade, eriti Norra ja Rootsi lõunaosa veehoidlad on tavapärasest tühjemad. Seetõttu on Põhjamaade süsteemihinna futuurid talvekuudeks umbes 130–140 €/MWh. Vihmane sügis võib olukorda parandada.",
       "source": "ERR",
       "url": "https://www.err.ee/1610139388/tiit-hobejogi-elektrituru-suurim-mojutaja-on-jarjest-enam-ilm",
       "date": "2026-09-16"
@@ -138,10 +161,10 @@
     {
       "title": "Estlink 1 ja 2 (Soome–Eesti kaablid)",
       "status": "watch",
-      "text": "Soome ja Eesti vahel on kaks kaablit: Estlink 1 (358 MW) ja Estlink 2 (658 MW). Estlink 2 on viimastel aastatel olnud kuid rikkis, viimati detsembrist 2024 juunini 2025 laeva ankru kahjustuse tõttu. Kui mõni kaabel talvel välja lülitub, kasvab Eesti ja Soome hinnavahe järsult.",
-      "source": "Fingrid",
-      "url": "https://www.fingrid.fi/en/news/news/2025/estlink-2-electricity-transmission-link-returns-to-commercial-use/",
-      "date": "2025-06-18"
+      "text": "Soome ja Eesti vahel on kaks kaablit: Estlink 1 (358 MW) ja Estlink 2 (658 MW). Estlink 2 on viimastel aastatel olnud kuid rikkis, viimati detsembrist 2024 juunini 2025 laeva ankru kahjustuse tõttu. Elering ja Fingrid plaanivad 2027. aastast vähendada Soome–Eesti ülekandeõiguste (FTR) mahtu 650 MW-lt 350 MW-le, mis võib kergitada fikseeritud pakettide hindu.",
+      "source": "ERR",
+      "url": "https://www.err.ee/1610040082/eestlaste-edu-sagedusturul-karistas-suureks-elektrihinna-vahe-lati-leeduga",
+      "date": "2026-05-28"
     },
     {
       "title": "Olkiluoto 3 tuumajaam",
@@ -152,17 +175,9 @@
       "date": "2026-04-02"
     },
     {
-      "title": "Uued tuulepargid ja akud",
+      "title": "Tuul, akud ja ilm",
       "status": "ok",
-      "text": "Piirkonda on lisandunud umbes 900 MW tuuleparke ja 500 MW akusalvesteid. Tuulisel talvel aitavad need hinda all hoida, akud ühtlustavad tunnihindu.",
-      "source": "ERR",
-      "url": "https://www.err.ee/1610139388/tiit-hobejogi-elektrituru-suurim-mojutaja-on-jarjest-enam-ilm",
-      "date": "2026-09-16"
-    },
-    {
-      "title": "Ilm",
-      "status": "watch",
-      "text": "Suurim üksik tegur. Külm ja tuulevaikne periood tõstab hinda kõige rohkem, pehme ja tuuline talv langetab. Eelmisel talvel läks jaanuar–veebruar futuuridest kallimaks, detsember odavamaks.",
+      "text": "Piirkonda on lisandunud umbes 900 MW tuuleparke ja 500 MW akusalvesteid. Tuulisel ja pehmel talvel aitavad need hinda all hoida. Külm ja tuulevaikne ilm on suurim hinnatõusu põhjus.",
       "source": "ERR",
       "url": "https://www.err.ee/1610139388/tiit-hobejogi-elektrituru-suurim-mojutaja-on-jarjest-enam-ilm",
       "date": "2026-09-16"
