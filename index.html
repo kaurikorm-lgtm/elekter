@@ -59,6 +59,12 @@
   footer { color: var(--muted); font-size: .82rem; margin-top: 24px; }
   .reco { font-size: 1.05rem; }
   .reco b { font-variant-numeric: tabular-nums; }
+  .form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
+  .form label { display: flex; flex-direction: column; gap: 4px; font-size: .85rem; color: var(--text-2); }
+  .form select, .form input { font: inherit; font-size: 1rem; color: var(--text); background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; min-height: 42px; }
+  .best { background: var(--bg); border-radius: 10px; padding: 12px 14px; }
+  .best .big { font-size: 1.35rem; font-weight: 650; }
 </style>
 </head>
 <body>
@@ -75,6 +81,25 @@
       <div class="tip" id="spotTip"></div>
     </div>
     <p class="note" id="spotNote"></p>
+    <div id="planner" style="border-top:1px solid var(--border);margin-top:14px;padding-top:14px">
+      <h2 style="margin-bottom:8px">Millal on kõige soodsam?</h2>
+      <div class="form">
+        <label>Kestus
+          <select id="plDur">
+            <option value="0.5">30 min</option><option value="1">1 h</option><option value="1.5">1,5 h</option>
+            <option value="2" selected>2 h</option><option value="3">3 h</option><option value="4">4 h</option>
+            <option value="6">6 h</option><option value="8">8 h</option>
+          </select></label>
+        <label>Lõpeta hiljemalt
+          <select id="plWithin">
+            <option value="0">kõik teadaolevad tunnid</option><option value="6">6 h jooksul</option>
+            <option value="12">12 h jooksul</option><option value="24">24 h jooksul</option>
+          </select></label>
+        <label>Võimsus (kW, valikuline)
+          <input id="plKw" type="number" min="0" step="0.1" inputmode="decimal" placeholder="nt 2"></label>
+      </div>
+      <div id="plOut" class="reco" aria-live="polite"></div>
+    </div>
   </section>
 
   <section class="kpis" id="kpis" aria-label="Põhinäitajad"></section>
@@ -240,6 +265,8 @@ fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
   const pts = (P.ee || []).map(([t, p]) => ({ t, v: p * 1.24 / 10 }));
   if (!pts.length) { document.getElementById("spotNote").textContent = "Börsihindu ei õnnestunud laadida" + (P.error ? ` (${P.error})` : "") + "."; return; }
   window._spot = pts; drawSpot(pts);
+  ["plDur", "plWithin", "plKw"].forEach(id => document.getElementById(id).addEventListener("input", plan));
+  plan();
   const now = Date.now() / 1000;
   const cur = pts.filter(p => p.t <= now).pop();
   const today = dayKey(now), tomorrow = dayKey(now + 86400);
@@ -260,8 +287,41 @@ fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
     `<div class="kpi"><div class="l">${x.l}</div><div class="v">${x.v}</div><div class="n">${x.n}</div></div>`).join("");
   const last = pts[pts.length - 1].t;
   document.getElementById("spotNote").textContent =
-    `Teadaolevad hinnad kuni ${dmy(last)} kell ${hm(last + 900)}. Andmed: ${P.source}, uuendatakse iga tund.`;
+    `Teadaolevad hinnad kuni ${dmy(last + 900)} kell ${hm(last + 900)}. Andmed: ${P.source}, uuendatakse iga tund.`;
 }).catch(() => { document.getElementById("spotNote").textContent = "Börsihindu ei õnnestunud laadida."; });
+
+// Soodsaim järjestikune ajavahemik teadaolevate hindade seas
+function plan() {
+  const pts = window._spot || [], out = document.getElementById("plOut");
+  const n = Math.round(+document.getElementById("plDur").value * 4);
+  const within = +document.getElementById("plWithin").value;
+  const kw = parseFloat(String(document.getElementById("plKw").value).replace(",", ".")) || 0;
+  const now = Date.now() / 1000, startMin = Math.floor(now / 900) * 900;
+  const limit = within ? now + within * 3600 : Infinity;
+  const fut = pts.filter(p => p.t >= startMin);
+  let best = null, nowWin = null;
+  for (let i = 0; i + n <= fut.length; i++) {
+    const w = fut.slice(i, i + n);
+    if (w[n - 1].t - w[0].t !== (n - 1) * 900) continue;      // peab olema katkematu
+    if (w[n - 1].t + 900 > limit) break;
+    const avg = w.reduce((s, p) => s + p.v, 0) / n;
+    if (i === 0) nowWin = { t: w[0].t, avg };
+    if (!best || avg < best.avg) best = { t: w[0].t, avg };
+  }
+  window._plan = best ? { t0: best.t, t1: best.t + n * 900 } : null;
+  if (window._spot) drawSpot(window._spot);
+  if (!best) { out.innerHTML = `<p class="note">Selle valikuga ei ole piisavalt teadaolevaid hindu. Homsed hinnad avaldatakse umbes kell 14.</p>`; return; }
+  const kwh = kw * n / 4, cost = a => kwh * a / 100;
+  const when = t => `${dmy(t)} kell ${hm(t)}`;
+  let h = `<div class="best"><div class="note">Soodsaim aeg</div><div class="big">${when(best.t)}–${hm(best.t + n * 900)}</div>
+    <div>keskmine hind <b>${fmt(best.avg, 2)} s/kWh</b>${kw ? ` · ${fmt(kwh)} kWh maksab energiana umbes <b>${fmt(cost(best.avg), 2)} €</b>` : ""}</div></div>`;
+  if (nowWin && nowWin.t !== best.t) {
+    const diff = nowWin.avg - best.avg;
+    h += `<p class="note">Kohe alustades oleks keskmine ${fmt(nowWin.avg, 2)} s/kWh${kw ? ` (umbes ${fmt(cost(nowWin.avg), 2)} €)` : ""} – ootamine säästab ${fmt(diff, 2)} s/kWh${kw ? `, kokku umbes ${fmt(cost(diff), 2)} €` : ""}.</p>`;
+  } else if (nowWin) h += `<p class="note">Praegu ongi soodsaim aeg alustada.</p>`;
+  h += `<p class="note">Arvestatud on ainult börsihinda koos käibemaksuga. Fikseeritud hinnaga kuul ei muuda ajastus energiahinda, Võrk 4 võrgutasu on öösel (tööpäeviti 22–7) ja nädalavahetusel veel umbes 2 s/kWh odavam.</p>`;
+  out.innerHTML = h;
+}
 
 function drawSpot(pts) {
   const svg = document.getElementById("spot"), wrap = document.getElementById("spotWrap"), tip = document.getElementById("spotTip");
@@ -274,6 +334,7 @@ function drawSpot(pts) {
   const x = t => m.l + (W - m.l - m.r) * (t - t0) / (t1 - t0);
   const y = v => m.t + (H - m.t - m.b) * (top - v) / (top - bot);
   let s = `<rect x="${x(now)}" y="${m.t}" width="${x(t1) - x(now)}" height="${H - m.t - m.b}" fill="var(--grid)" opacity=".5"/>`;
+  if (window._plan) s += `<rect x="${x(window._plan.t0)}" y="${m.t}" width="${Math.max(2, x(window._plan.t1) - x(window._plan.t0))}" height="${H - m.t - m.b}" fill="var(--ok)" opacity=".18"/><text x="${x(window._plan.t0) + 2}" y="${H - m.b - 4}" style="fill:var(--ok);font-size:11px">soodsaim</text>`;
   for (let v = bot; v <= top; v += step) s += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${m.l - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
   // päevade piirid
   const seen = new Set();
