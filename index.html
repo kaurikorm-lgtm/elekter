@@ -97,11 +97,8 @@
             <option value="2" selected>2 h</option><option value="3">3 h</option><option value="4">4 h</option>
             <option value="6">6 h</option><option value="8">8 h</option>
           </select></label>
-        <label>Lõpeta hiljemalt
-          <select id="plWithin">
-            <option value="0">kõik teadaolevad tunnid</option><option value="6">6 h jooksul</option>
-            <option value="12">12 h jooksul</option><option value="24">24 h jooksul</option>
-          </select></label>
+        <label>Peab valmis olema
+          <select id="plWithin"><option value="0">pole vahet</option></select></label>
       </div>
       <div id="plOut" class="reco" aria-live="polite"></div>
     </div>
@@ -276,6 +273,12 @@ fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
     document.getElementById("spotTip").style.opacity = 0;
     drawSpot(window._spot);
   }));
+  const sel = document.getElementById("plWithin"), nowS = Date.now() / 1000, lastT = pts[pts.length - 1].t + 900;
+  const todayK = dayKey(nowS), tomK = dayKey(nowS + 86400);
+  for (let t = Math.ceil(nowS / 3600) * 3600 + 3600; t <= lastT; t += 3600) {
+    const k = dayKey(t), dayName = k === todayK ? "täna" : k === tomK ? "homme" : dmy(t);
+    const o = document.createElement("option"); o.value = t; o.textContent = `${dayName} kell ${hm(t)}`; sel.appendChild(o);
+  }
   ["plDur", "plWithin"].forEach(id => document.getElementById(id).addEventListener("input", plan));
   plan();
   const now = Date.now() / 1000;
@@ -305,9 +308,9 @@ fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
 function plan() {
   const pts = window._spot || [], out = document.getElementById("plOut");
   const n = Math.round(+document.getElementById("plDur").value * 4);
-  const within = +document.getElementById("plWithin").value;
+  const deadline = +document.getElementById("plWithin").value;
   const now = Date.now() / 1000, startMin = Math.floor(now / 900) * 900;
-  const limit = within ? now + within * 3600 : Infinity;
+  const limit = deadline || Infinity;
   const fut = pts.filter(p => p.t >= startMin);
   let best = null, nowWin = null;
   for (let i = 0; i + n <= fut.length; i++) {
@@ -320,7 +323,9 @@ function plan() {
   }
   window._plan = best ? { t0: best.t, t1: best.t + n * 900 } : null;
   if (window._spot) drawSpot(window._spot);
-  if (!best) { out.innerHTML = `<p class="note">Selle valikuga ei ole piisavalt teadaolevaid hindu. Homsed hinnad avaldatakse umbes kell 14.</p>`; return; }
+  if (!best) { out.innerHTML = deadline && deadline - now < n * 900
+      ? `<p class="note">Selleks ajaks ei jõua valitud kestusega valmis – vali hilisem aeg või lühem kestus.</p>`
+      : `<p class="note">Selle valikuga ei ole piisavalt teadaolevaid hindu. Homsed hinnad avaldatakse umbes kell 14.</p>`; return; }
   const when = t => `${dmy(t)} kell ${hm(t)}`;
   let h = `<div class="best"><div class="note">Soodsaim aeg</div><div class="big">${when(best.t)}–${hm(best.t + n * 900)}</div>
     <div>keskmine hind <b>${fmt(best.avg, 2)} s/kWh</b></div></div>`;
