@@ -324,9 +324,6 @@ fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
     { l: "Täna keskmine", v: tToday.length ? `${fmt(avg(tToday))} s` : "–", n: "s/kWh KM-ga" },
     { l: "Homme keskmine", v: tTom.length >= 90 ? `${fmt(avg(tTom))} s` : "pole veel", n: tTom.length >= 90 ? "s/kWh KM-ga" : "avaldatakse ~kell 14" },
     cheap && { l: "Odavaim tund ees", v: `${fmt(cheap.v)} s`, n: `${dmy(cheap.t)} kell ${hm(cheap.t)}` },
-    (() => { const fi = new Map(window._zones.fi.map(p => [p.t, p.v])), past = pts.filter(p => p.t <= now && fi.has(p.t));
-      if (!past.length) return null; const dlt = past.reduce((a, p) => a + p.v - fi.get(p.t), 0) / past.length;
-      return { l: "Vahe Soomega (72 h)", v: `${dlt >= 0 ? "+" : ""}${fmt(dlt)} s`, n: "Eesti miinus Soome, keskmine" }; })(),
   ].filter(Boolean);
   document.getElementById("spotKpis").innerHTML = k.map(x =>
     `<div class="kpi"><div class="l">${x.l}</div><div class="v">${x.v}</div><div class="n">${x.n}</div></div>`).join("");
