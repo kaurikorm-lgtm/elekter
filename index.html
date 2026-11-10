@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Elektri hinna väljavaade – kõrm.ee</title>
 <meta name="description" content="Eesti elektri börsihinna väljavaade futuuride põhjal ja hinda mõjutavad tegurid. Uueneb kord nädalas.">
 <style>
@@ -172,7 +174,18 @@ const fmt = (n, d = 1) => n == null ? "–" : n.toLocaleString("et-EE", { minimu
 const isWinter = p => { const m = +p.slice(5, 7); return m >= 11 || m <= 3; };
 const fmtDate = s => { const [y, m, d] = s.split("-"); return `${+d}.${+m}.${y}`; };
 
-fetch("data.json?v=" + Date.now()).then(r => r.json()).then(render).catch(() => {
+// Turvalisus: data.json sisu käsitletakse tekstina. Kõik stringid HTML-escape'itakse,
+// lingid lubatakse ainult https:// kujul ja staatus ainult lubatud väärtustest.
+const escHtml = v => String(v).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+function sanitize(o, key = "") {
+  if (Array.isArray(o)) return o.map(v => sanitize(v, key));
+  if (o && typeof o === "object") { const r = {}; for (const k in o) r[k] = sanitize(o[k], k); return r; }
+  if (typeof o !== "string") return o;
+  if (/url$/i.test(key)) return /^https:\/\/[^\s"'<>]+$/.test(o) ? o : "#";
+  if (key === "status") return ["risk", "watch", "ok"].includes(o) ? o : "watch";
+  return escHtml(o);
+}
+fetch("data.json?v=" + Date.now()).then(r => r.json()).then(d => render(sanitize(d))).catch(() => {
   document.getElementById("sub").textContent = "Andmete laadimine ebaõnnestus.";
 });
 
@@ -236,7 +249,7 @@ function render(D) {
   document.getElementById("factors").innerHTML = D.factors.map(f =>
     `<div class="factor ${f.status}"><h3>${f.title} <span class="badge">${badge[f.status]}</span></h3><p>${f.text}</p><div class="src">Allikas: <a href="${f.url}" rel="noopener">${f.source}</a>${f.date ? `, ${fmtDate(f.date)}` : ""}</div></div>`).join("");
 
-  document.getElementById("method").textContent =
+  document.getElementById("method").innerHTML =
     `Eesti futuuridega kaubeldakse vähe, seega on prognoos arvutatud nii: Soome futuur (Põhjamaade süsteemihind + Soome EPAD) + Eesti–Soome hinnavahe, talvel ${D.eeSpread.winter[0]}–${D.eeSpread.winter[1]} ja suvel ${D.eeSpread.summer[0]}–${D.eeSpread.summer[1]} €/MWh, millele lisandub 24% käibemaks. ${D.eeSpread.note}`;
   document.getElementById("footer").innerHTML =
     `Futuuride allikas: <a href="${D.futuresSource.url}" rel="noopener">${D.futuresSource.name}</a>. Leht uueneb automaatselt kord nädalas. Viimati uuendatud ${fmtDate(D.updated)}.`;
