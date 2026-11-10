@@ -92,6 +92,13 @@
     <div class="legend" id="zoneToggles"><span><i style="background:var(--series)"></i>Eesti</span>
       <label style="cursor:pointer"><input type="checkbox" data-z="fi"> <i style="background:var(--s-fi)"></i>Soome</label>
       <label style="cursor:pointer"><input type="checkbox" data-z="lv"> <i style="background:var(--s-lv)"></i>Läti ja Leedu</label></div>
+    <div class="legend" style="margin-top:6px">
+      <label style="cursor:pointer"><input type="checkbox" id="netOn"> Koos võrgutasu ja riiklike tasudega</label>
+      <select id="netPkg" aria-label="Võrgupakett" style="font:inherit;font-size:.85rem;padding:4px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)">
+        <option value="v4" selected>Võrk 4</option><option value="v5">Võrk 5</option><option value="v2">Võrk 2</option><option value="v1">Võrk 1</option>
+      </select>
+    </div>
+    <p class="note" id="netNote" hidden>Hinnale on lisatud Elektrilevi elektri edastamise tasu valitud paketi järgi (hinnakiri alates 1.06.2026; päevane tariif tööpäeviti 7–22, Võrk 5 tipuaeg novembrist märtsini) ning 2026. aasta tasud kWh kohta koos käibemaksuga: taastuvenergia tasu 1,04, varustuskindluse tasu 0,94, tasakaalustamisvõimsuse tasu 0,46 ja elektriaktsiis 0,26 s/kWh. Arvestamata on müüja marginaal ja kuutasud. Riigipühi ei arvestata. Soome ja Läti-Leedu jooned on puhas börsihind.</p>
     <p class="note" id="spotNote"></p>
     <div id="planner" style="border-top:1px solid var(--border);margin-top:14px;padding-top:14px">
       <h2 style="margin-bottom:8px">Millal on kõige soodsam?</h2>
@@ -293,7 +300,8 @@ fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
   const pts = conv(P.ee);
   window._zones = { fi: conv(P.fi), lv: conv(P.lv) };
   if (!pts.length) { document.getElementById("spotNote").textContent = "Börsihindu ei õnnestunud laadida" + (P.error ? ` (${P.error})` : "") + "."; return; }
-  window._spot = pts; drawSpot(pts);
+  window._spotRaw = pts; window._spot = applyNet(pts); drawSpot(window._spot);
+  initNetControls();
   document.querySelectorAll("#zoneToggles input").forEach(c => c.addEventListener("change", () => drawSpot(window._spot)));
   document.querySelectorAll("#spotRange button").forEach(b => b.addEventListener("click", () => {
     window._range = b.dataset.r;
@@ -309,6 +317,14 @@ fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
   }
   ["plDur", "plWithin"].forEach(id => document.getElementById(id).addEventListener("input", plan));
   plan();
+  renderSpotKpis();
+  const last = pts[pts.length - 1].t;
+  document.getElementById("spotNote").textContent =
+    `Teadaolevad hinnad kuni ${dmy(last + 900)} kell ${hm(last + 900)}. Andmed: ${P.source}, uuendatakse iga tund.`;
+}).catch(() => { document.getElementById("spotNote").textContent = "Börsihindu ei õnnestunud laadida."; });
+
+function renderSpotKpis() {
+  const pts = window._spot, unit = netOn() ? "s/kWh koos tasudega" : "s/kWh KM-ga";
   const now = Date.now() / 1000;
   const cur = pts.filter(p => p.t <= now).pop();
   const today = dayKey(now), tomorrow = dayKey(now + 86400);
@@ -320,17 +336,62 @@ fetch("prices.json?v=" + Date.now()).then(r => r.json()).then(P => {
   const hl = Object.entries(hours).filter(([, v]) => v.length === 4).map(([h, v]) => ({ t: +h, v: v.reduce((a, b) => a + b) / 4 }));
   const cheap = hl.length ? hl.reduce((a, b) => b.v < a.v ? b : a) : null;
   const k = [
-    cur && { l: `Praegu (${hm(cur.t)})`, v: `${fmt(cur.v)} s`, n: "s/kWh KM-ga" },
-    { l: "Täna keskmine", v: tToday.length ? `${fmt(avg(tToday))} s` : "–", n: "s/kWh KM-ga" },
-    { l: "Homme keskmine", v: tTom.length >= 90 ? `${fmt(avg(tTom))} s` : "pole veel", n: tTom.length >= 90 ? "s/kWh KM-ga" : "avaldatakse ~kell 14" },
+    cur && { l: `Praegu (${hm(cur.t)})`, v: `${fmt(cur.v)} s`, n: unit },
+    { l: "Täna keskmine", v: tToday.length ? `${fmt(avg(tToday))} s` : "–", n: unit },
+    { l: "Homme keskmine", v: tTom.length >= 90 ? `${fmt(avg(tTom))} s` : "pole veel", n: tTom.length >= 90 ? unit : "avaldatakse ~kell 14" },
     cheap && { l: "Odavaim tund ees", v: `${fmt(cheap.v)} s`, n: `${dmy(cheap.t)} kell ${hm(cheap.t)}` },
   ].filter(Boolean);
   document.getElementById("spotKpis").innerHTML = k.map(x =>
     `<div class="kpi"><div class="l">${x.l}</div><div class="v">${x.v}</div><div class="n">${x.n}</div></div>`).join("");
-  const last = pts[pts.length - 1].t;
-  document.getElementById("spotNote").textContent =
-    `Teadaolevad hinnad kuni ${dmy(last + 900)} kell ${hm(last + 900)}. Andmed: ${P.source}, uuendatakse iga tund.`;
-}).catch(() => { document.getElementById("spotNote").textContent = "Börsihindu ei õnnestunud laadida."; });
+}
+
+// Elektrilevi võrgutasu (elektri edastamine), s/kWh koos KM-ga, hinnakiri alates 1.06.2026.
+// Kuutasud ja muud tasud (taastuvenergia, aktsiis, varustuskindlus) ei ole arvestatud.
+const NET = {
+  v1: { name: "Võrk 1", day: 9.57, night: 9.57 },
+  v2: { name: "Võrk 2", day: 7.53, night: 4.35 },
+  v4: { name: "Võrk 4", day: 4.58, night: 2.60 },
+  v5: { name: "Võrk 5", day: 6.56, night: 3.76, peak: 10.14, wkPeak: 5.88 },
+};
+// Riiklikud ja süsteemitasud 2026, s/kWh koos 24% KM-ga
+const FEES = [
+  { name: "taastuvenergia tasu", v: 1.04 },        // 0,84 + KM
+  { name: "varustuskindluse tasu", v: 0.94 },      // 0,758 + KM
+  { name: "tasakaalustamisvõimsuse tasu", v: 0.46 }, // 0,373 + KM
+  { name: "elektriaktsiis", v: 0.26 },             // 0,21 + KM
+];
+const FEES_SUM = FEES.reduce((a, f) => a + f.v, 0);
+function netOn() { return document.getElementById("netOn") && document.getElementById("netOn").checked; }
+function netFee(t, pkg) {
+  const P = NET[pkg], d = new Date(t * 1000);
+  const wd = d.toLocaleDateString("en-GB", { timeZone: tz, weekday: "short" });
+  const hh = +d.toLocaleString("en-GB", { timeZone: tz, hour: "2-digit", hourCycle: "h23" });
+  const mo = +d.toLocaleString("en-GB", { timeZone: tz, month: "numeric" });
+  const weekend = wd === "Sat" || wd === "Sun", winter = mo >= 11 || mo <= 3;
+  if (P.peak && winter) {
+    if (!weekend && ((hh >= 9 && hh < 12) || (hh >= 16 && hh < 20))) return P.peak;
+    if (weekend && hh >= 16 && hh < 20) return P.wkPeak;
+  }
+  return !weekend && hh >= 7 && hh < 22 ? P.day : P.night;
+}
+function applyNet(raw) {
+  if (!netOn()) return raw;
+  const pkg = document.getElementById("netPkg").value;
+  return raw.map(p => ({ t: p.t, v: p.v + netFee(p.t, pkg) + FEES_SUM }));
+}
+function initNetControls() {
+  const on = document.getElementById("netOn"), pk = document.getElementById("netPkg");
+  try { const s = JSON.parse(localStorage.getItem("net") || "null"); if (s) { on.checked = !!s.on; if (NET[s.pkg]) pk.value = s.pkg; } } catch (e) {}
+  const upd = () => {
+    try { localStorage.setItem("net", JSON.stringify({ on: on.checked, pkg: pk.value })); } catch (e) {}
+    pk.disabled = !on.checked;
+    window._spot = applyNet(window._spotRaw);
+    document.getElementById("netNote").hidden = !on.checked;
+    renderSpotKpis(); drawSpot(window._spot); plan();
+  };
+  on.addEventListener("change", upd); pk.addEventListener("change", upd);
+  if (on.checked) upd(); else pk.disabled = true;
+}
 
 // Soodsaim järjestikune ajavahemik teadaolevate hindade seas
 function plan() {
@@ -361,7 +422,9 @@ function plan() {
     const diff = nowWin.avg - best.avg;
     h += `<p class="note">Kohe alustades oleks keskmine ${fmt(nowWin.avg, 2)} s/kWh – ootamine säästab ${fmt(diff, 2)} s/kWh.</p>`;
   } else if (nowWin) h += `<p class="note">Praegu ongi soodsaim aeg alustada.</p>`;
-  h += `<p class="note">Arvestatud on ainult börsihinda koos käibemaksuga. Fikseeritud hinnaga kuul ei muuda ajastus energiahinda, Võrk 4 võrgutasu on öösel (tööpäeviti 22–7) ja nädalavahetusel veel umbes 2 s/kWh odavam.</p>`;
+  h += netOn()
+    ? `<p class="note">Arvestatud on börsihind koos võrgutasu (${NET[document.getElementById("netPkg").value].name}) ja riiklike tasudega. Fikseeritud hinnaga kuul muudab ajastus ainult võrgutasu osa.</p>`
+    : `<p class="note">Arvestatud on ainult börsihinda koos käibemaksuga. Võrgutasu arvestamiseks märgi graafiku all „Koos võrgutasu ja riiklike tasudega”.</p>`;
   out.innerHTML = h;
 }
 
