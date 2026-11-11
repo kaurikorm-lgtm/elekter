@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-10",
+  "updated": "2026-11-11",
   "futuresDate": "9.11.2026",
   "futuresSource": {
     "name": "Euronext Nord Pool sulgemishinnad (sahkotutka.fi, parassahko.fi kaudu)",
@@ -129,19 +129,28 @@
   ],
   "factors": [
     {
-      "title": "Eesti hind kordades kõrgem kui Soomes",
+      "title": "Novembri hinnad: Eesti Soome ja Läti-Leedu vahel",
       "status": "risk",
-      "text": "Novembri alguses on Eesti börsihind olnud Soomest mitu korda kõrgem, kuigi Estlinki kaablid töötavad täisvõimsusel. Põhjused on Baltikumi sisesed ülekandepiirangud, Eesti suurte elektrijaamade hooldused, tuulevaikne ilm ja kallis gaas. 9. novembril oli Eesti päeva keskmine 202 €/MWh (Soomes 15), 10. novembriks 305 €/MWh (Soomes 108).",
-      "source": "Postimees; Lõunaeestlane",
-      "url": "https://majandus.postimees.ee/8577420/elektri-borsihind-on-juba-praegu-talviselt-krobe-mis-saab-siis-kui-pakane-paukuma-hakkab",
-      "date": "2026-11-09"
+      "text": "1.–11. novembri keskmine hind oli Eestis 199,2, Soomes 71, Lätis 304 ja Leedus 295 €/MWh. 10. novembri päeva keskmine 305 €/MWh oli kõrgeim alates veebruari algusest. Eesti hind on Läti-Leedu omast madalam tänu käivitatud reservjaamadele.",
+      "source": "ERR",
+      "url": "https://www.err.ee/1610191780/toost-valjas-jaamad-ja-kesk-euroopa-kallis-elekter-viisid-elektri-hinna-noolena-ules",
+      "date": "2026-11-11"
     },
     {
-      "title": "Läti ja Leedu hinnad",
+      "title": "Balti elektrijaamad remondis",
       "status": "risk",
-      "text": "Kui Eesti vajab rohkem elektrit, kui Soomest kaablite kaudu tuleb ja ise toodetakse, kujuneb hind koos Läti ja Leeduga, kus elekter on tavaliselt kallim. Septembris oli keskmine hind Lätis 108,7, Leedus 108,6 ja Eestis 75,0 €/MWh.",
-      "source": "AST (Läti põhivõrk), septembri 2026 turuülevaade",
-      "url": "https://www.ast.lv/en/electricity-market-review"
+      "text": "Eestis on turult väljas 365 MW: Auvere (260 MW, remont veel umbes nädal) ja Eesti elektrijaama 8. ploki üks katel (105 MW). Lätis on Riia TEC-2 teine plokk (420 MW) remondis 26. novembrini ja TEC-1 (73 MW) 14. novembrini, Leedus Elektrėnai plokk (455 MW) 25. novembrini. Kokku on Baltikumis puudu umbes 1400 MW juhitavat võimsust.",
+      "source": "ERR",
+      "url": "https://www.err.ee/1610191780/toost-valjas-jaamad-ja-kesk-euroopa-kallis-elekter-viisid-elektri-hinna-noolena-ules",
+      "date": "2026-11-11"
+    },
+    {
+      "title": "Rootsi tuumajaamad ja Kesk-Euroopa hind",
+      "status": "risk",
+      "text": "Rootsis on hoolduses kolm tuumareaktorit (kokku umbes 3,3 GW, tagasi 17., 21. ja 28. novembril) ja Lõuna-Rootsi ülekandepiirangud sunnivad sealset hinnapiirkonda importima kallist elektrit Saksamaalt. See hind jõuab NordBalti kaabli kaudu Leetu ja edasi Baltikumi; ka Poola kauplemine Leedu kaudu tõstab hinda.",
+      "source": "ERR",
+      "url": "https://www.err.ee/1610191780/toost-valjas-jaamad-ja-kesk-euroopa-kallis-elekter-viisid-elektri-hinna-noolena-ules",
+      "date": "2026-11-11"
     },
     {
       "title": "Eesti–Läti ühenduse piirangud",
@@ -167,14 +176,6 @@
       "url": "https://mindenergy.com/insights/knowledge-hub/november-recap-panic-on-the-markets-ahead-of-winter"
     },
     {
-      "title": "Estlink 1 ja 2 (Soome–Eesti kaablid)",
-      "status": "watch",
-      "text": "Soome ja Eesti vahel on kaks kaablit: Estlink 1 (358 MW) ja Estlink 2 (658 MW). Estlink 2 on viimastel aastatel olnud kuid rikkis, viimati detsembrist 2024 juunini 2025 laeva ankru kahjustuse tõttu. Elering ja Fingrid plaanivad 2027. aastast vähendada Soome–Eesti ülekandeõiguste (FTR) mahtu 650 MW-lt 350 MW-le, mis võib kergitada fikseeritud pakettide hindu.",
-      "source": "ERR",
-      "url": "https://www.err.ee/1610040082/eestlaste-edu-sagedusturul-karistas-suureks-elektrihinna-vahe-lati-leeduga",
-      "date": "2026-05-28"
-    },
-    {
       "title": "Olkiluoto 3 tuumajaam",
       "status": "risk",
       "text": "OL3 annab umbes 14% Soome elektritoodangust. Selle hooldusseisak algas 10. septembril ja pidi lõppema oktoobri lõpus, kuid taaskäivitus on lükatud 18. novembrile 2026. Seni on Soome hind tuule puudumisel kõrgem.",
@@ -183,12 +184,12 @@
       "date": "2026-11-05"
     },
     {
-      "title": "Tuul, akud ja ilm",
-      "status": "ok",
-      "text": "Piirkonda on lisandunud umbes 900 MW tuuleparke ja 500 MW akusalvesteid. Tuulisel ja pehmel talvel aitavad need hinda all hoida. Külm ja tuulevaikne ilm on suurim hinnatõusu põhjus.",
+      "title": "Tuul ja päike",
+      "status": "watch",
+      "text": "Oktoobris kattis tuule- ja päikeseenergia umbes 40% Balti riikide tarbimisest, novembri alguses ainult umbes 20%: päikesetoodang vähenes poole võrra ja tuulikud töötasid vaid umbes 10% võimsusega. Pehme ja tuuline talv aitaks hinnatõusu pidurdada, pikk külm ja tuulevaikne periood tõstaks hindu kogu Baltikumis.",
       "source": "ERR",
-      "url": "https://www.err.ee/1610139388/tiit-hobejogi-elektrituru-suurim-mojutaja-on-jarjest-enam-ilm",
-      "date": "2026-09-16"
+      "url": "https://www.err.ee/1610191780/toost-valjas-jaamad-ja-kesk-euroopa-kallis-elekter-viisid-elektri-hinna-noolena-ules",
+      "date": "2026-11-11"
     }
   ]
 }
