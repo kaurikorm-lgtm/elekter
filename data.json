@@ -1,6 +1,6 @@
 {
   "updated": "2026-11-13",
-  "futuresDate": "11.11.2026",
+  "futuresDate": "12.11.2026",
   "futuresSource": {
     "name": "Euronext Nord Pool sulgemishinnad (sahkotutka.fi, parassahko.fi kaudu)",
     "url": "https://sahkotutka.fi/futuurit"
@@ -25,64 +25,64 @@
     {
       "period": "2026-12",
       "label": "Dets 2026",
-      "system": 140.0,
-      "fi": 94.0
+      "system": 149.5,
+      "fi": 96.5
     },
     {
       "period": "2027-01",
       "label": "Jaan 2027",
-      "system": 144.55,
-      "fi": 115.77
+      "system": 155.1,
+      "fi": 123.1
     },
     {
       "period": "2027-02",
       "label": "Veebr 2027",
-      "system": 144.5,
-      "fi": 127.25
+      "system": 152.7,
+      "fi": 130.7
     },
     {
       "period": "2027-03",
       "label": "Märts 2027",
-      "system": 109.0,
-      "fi": 86.5
+      "system": 116.5,
+      "fi": 90.7
     },
     {
       "period": "2027-04",
       "label": "Apr 2027",
-      "system": 91.0,
-      "fi": 76.84
+      "system": 94.4,
+      "fi": 78.5
     },
     {
       "period": "2027-05",
       "label": "Mai 2027",
-      "system": 49.38,
-      "fi": 35.22
+      "system": 52.4,
+      "fi": 36.5
     }
   ],
   "quarters": [
     {
       "label": "Q1 2027",
       "winter": true,
-      "system": 132.8,
-      "fi": 110.3
+      "system": 141.2,
+      "fi": 115.4
     },
     {
       "label": "Q2 2027",
       "winter": false,
-      "system": 60.15,
-      "fi": 45.99
+      "system": 63.3,
+      "fi": 47.4
     },
     {
       "label": "Q3 2027",
       "winter": false,
-      "system": 41.15,
-      "fi": 35.69
+      "system": 42.8,
+      "fi": 35.6
     },
     {
       "label": "Q4 2027",
       "winter": true,
-      "system": 68.18,
-      "fi": 63.43
+      "system": 69.8,
+      "fi": 64.3
     }
   ],
   "alexela": {
