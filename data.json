@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-12",
+  "updated": "2026-11-13",
   "futuresDate": "11.11.2026",
   "futuresSource": {
     "name": "Euronext Nord Pool sulgemishinnad (sahkotutka.fi, parassahko.fi kaudu)",
@@ -131,18 +131,18 @@
     {
       "title": "Novembri hinnad: Eesti Soome ja Läti-Leedu vahel",
       "status": "risk",
-      "text": "1.–11. novembri keskmine hind oli Eestis 199,2, Soomes 71, Lätis 304 ja Leedus 295 €/MWh. 10. novembri päeva keskmine 305 €/MWh oli kõrgeim alates veebruari algusest. Eesti hind on Läti-Leedu omast madalam tänu käivitatud reservjaamadele.",
+      "text": "Eesti börsihind on tõusnud kolm nädalat järjest; 14. novembri päeva keskmine on 214 €/MWh, Lätis üle 260 ja Leedus üle 300 €/MWh. Soodsam on ainult Soomes ja Rootsis. 1.–11. novembri keskmine oli Eestis 199,2, Soomes 71, Lätis 304 ja Leedus 295 €/MWh.",
       "source": "ERR",
-      "url": "https://www.err.ee/1610191780/toost-valjas-jaamad-ja-kesk-euroopa-kallis-elekter-viisid-elektri-hinna-noolena-ules",
-      "date": "2026-11-11"
+      "url": "https://www.err.ee/1610195524/eestis-on-remonttoode-tottu-suur-elektridefitsiit",
+      "date": "2026-11-13"
     },
     {
       "title": "Balti elektrijaamad remondis",
       "status": "risk",
-      "text": "Eestis on turult väljas 365 MW: Auvere (260 MW, remont veel umbes nädal) ja Eesti elektrijaama 8. ploki üks katel (105 MW). Lätis on Riia TEC-2 teine plokk (420 MW) remondis 26. novembrini ja TEC-1 (73 MW) 14. novembrini, Leedus Elektrėnai plokk (455 MW) 25. novembrini. Kokku on Baltikumis puudu umbes 1400 MW juhitavat võimsust.",
+      "text": "Auvere elektrijaam on remondist naasmas. Lätis ja Leedus on kummaski remondis gaasijaamu kokku umbes kahe Auvere jagu (Riia TEC-2 26. novembrini, TEC-1 14. novembrini, Leedu Elektrėnai 25. novembrini). Enefiti hinnangul võivad hinnatipud langeda, kui remonditud võimsused novembris turule naasevad.",
       "source": "ERR",
-      "url": "https://www.err.ee/1610191780/toost-valjas-jaamad-ja-kesk-euroopa-kallis-elekter-viisid-elektri-hinna-noolena-ules",
-      "date": "2026-11-11"
+      "url": "https://www.err.ee/1610195524/eestis-on-remonttoode-tottu-suur-elektridefitsiit",
+      "date": "2026-11-13"
     },
     {
       "title": "Rootsi tuumajaamad ja Kesk-Euroopa hind",
@@ -163,10 +163,10 @@
     {
       "title": "Maagaasi hind ja varud",
       "status": "risk",
-      "text": "Euroopa gaasi hind (TTF) tõusis 28. oktoobril päevasiseselt üle 100 €/MWh. ELi gaasihoidlad olid 26. oktoobri seisuga 74,9% täis, mis on selle aastaaja madalaim tase alates 2011. aastast. Külmadel tippudel määravad elektri hinna sageli gaasijaamad.",
-      "source": "S&P Global",
-      "url": "https://www.spglobal.com/energy/en/news-research/latest-news/natural-gas/102826-european-gas-price-tops-100mwh-intraday-ice",
-      "date": "2026-10-28"
+      "text": "Gaas on umbes kolm korda kallim kui aasta tagasi ning just gaasijaamad määravad praegu Baltikumis elektri hinna. Euroopa gaasi hind (TTF) tõusis 28. oktoobril päevasiseselt üle 100 €/MWh ja ELi gaasihoidlad olid selle aastaaja kohta rekordiliselt tühjad (26.10 seisuga 74,9%).",
+      "source": "ERR",
+      "url": "https://www.err.ee/1610195524/eestis-on-remonttoode-tottu-suur-elektridefitsiit",
+      "date": "2026-11-13"
     },
     {
       "title": "Põhjamaade veehoidlad",
