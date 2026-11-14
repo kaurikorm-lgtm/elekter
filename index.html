@@ -71,6 +71,35 @@
   .seg button { font: inherit; font-size: .85rem; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border);
     background: var(--bg); color: var(--text-2); cursor: pointer; min-height: 36px; }
   .seg button[aria-pressed="true"] { background: var(--series); border-color: var(--series); color: #fff; }
+  .tabs { display: none; }
+  @media (max-width: 899px) {
+    .spotcard .colL, .spotcard .colR, .spotcard .colP { display: contents; }
+  }
+  @media (min-width: 900px) {
+    main { max-width: 1200px; padding-top: 16px; }
+    .tabs { display: flex; gap: 4px; position: sticky; top: 0; z-index: 5; background: var(--bg);
+      border-bottom: 1px solid var(--border); margin: 0 0 16px; padding-top: 4px; }
+    .tabs a { padding: 10px 16px; text-decoration: none; color: var(--text-2); font-weight: 550;
+      border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .tabs a:hover { color: var(--text); }
+    .tabs a[aria-current="page"] { color: var(--series); border-bottom-color: var(--series); }
+    .tg { display: none; }
+    body[data-tab="tana"] .tg[data-tg="tana"], body[data-tab="prognoos"] .tg[data-tg="prognoos"],
+    body[data-tab="mojutajad"] .tg[data-tg="mojutajad"], body[data-tab="andmed"] .tg[data-tg="andmed"] { display: block; }
+    .spotcard { display: grid; grid-template-columns: 320px minmax(0, 1fr); column-gap: 28px; align-items: start; }
+    .spotcard > h2, .spotcard > p.note { grid-column: 1 / -1; }
+    .spotcard .colL { grid-column: 1; grid-row: 3; }
+    .spotcard .colP { grid-column: 1; grid-row: 4; }
+    .spotcard .colR { grid-column: 2; grid-row: 3 / span 2; }
+    .spotcard #planner { border-top: 1px solid var(--border); margin-top: 4px !important; }
+    .spotcard .form { grid-template-columns: 1fr 1fr; }
+    body[data-tab="prognoos"] .tg[data-tg="prognoos"] { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 16px; align-items: start; }
+    .tg[data-tg="prognoos"] > #kpis, .tg[data-tg="prognoos"] > section:last-child { grid-column: 1 / -1; }
+    .tg[data-tg="prognoos"] > .recocard { margin-top: 0 !important; }
+    .tg[data-tg="prognoos"] > section { margin-bottom: 0; }
+    #factors { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    #factors .factor { margin: 0; }
+  }
   .best { background: var(--bg); border-radius: 10px; padding: 12px 14px; }
   .best .big { font-size: 1.35rem; font-weight: 650; }
 </style>
@@ -80,10 +109,16 @@
   <h1>Elektri hinna väljavaade</h1>
   <p class="sub" id="sub">Laen andmeid…</p>
 
-  <section class="card">
+  <nav class="tabs" id="tabs" aria-label="Vaated">
+    <a href="#tana" data-t="tana">Täna</a><a href="#prognoos" data-t="prognoos">Prognoos</a><a href="#mojutajad" data-t="mojutajad">Mõjutajad</a><a href="#andmed" data-t="andmed">Andmed</a>
+  </nav>
+
+  <div class="tg" data-tg="tana">
+  <section class="card spotcard">
     <h2>Börsihind: eelmised 72 h ja järgmised 48 h</h2>
     <p class="note" style="margin-top:-6px">Eesti hinnapiirkond, s/kWh koos 24% käibemaksuga, ilma marginaali ja võrgutasuta. Järgmise päeva hinnad avaldatakse umbes kell 14.</p>
-    <div class="kpis" id="spotKpis" style="margin-bottom:12px"></div>
+    <div class="colL"><div class="kpis" id="spotKpis" style="margin-bottom:12px"></div></div>
+    <div class="colR">
     <div class="seg" id="spotRange" role="group" aria-label="Ajavahemik">
       <button data-r="all" aria-pressed="true">Kõik</button><button data-r="past24">Eelmised 24 h</button><button data-r="today">Täna</button><button data-r="tomorrow">Homme</button><button data-r="next12">Järgmised 12 h</button>
     </div>
@@ -102,7 +137,8 @@
     </div>
     <p class="note" id="netNote" hidden>Hinnale on lisatud Elektrilevi elektri edastamise tasu valitud paketi järgi (hinnakiri alates 1.06.2026; päevane tariif tööpäeviti 7–22, Võrk 5 tipuaeg novembrist märtsini) ning 2026. aasta tasud kWh kohta koos käibemaksuga: taastuvenergia tasu 1,04, varustuskindluse tasu 0,94, tasakaalustamisvõimsuse tasu 0,46 ja elektriaktsiis 0,26 s/kWh. Arvestamata on müüja marginaal ja kuutasud. Riigipühi ei arvestata. Soome ja Läti-Leedu jooned on puhas börsihind.</p>
     <p class="note" id="spotNote"></p>
-    <div id="planner" style="border-top:1px solid var(--border);margin-top:14px;padding-top:14px">
+    </div>
+    <div class="colP"><div id="planner" style="border-top:1px solid var(--border);margin-top:14px;padding-top:14px">
       <h2 style="margin-bottom:8px">Millal on kõige soodsam?</h2>
       <div class="form">
         <label>Kestus
@@ -115,17 +151,19 @@
           <select id="plWithin"><option value="0">pole vahet</option></select></label>
       </div>
       <div id="plOut" class="reco" aria-live="polite"></div>
-    </div>
+    </div></div>
   </section>
+  </div>
 
+  <div class="tg" data-tg="prognoos">
   <section class="kpis" id="kpis" aria-label="Põhinäitajad"></section>
 
-  <section class="card" style="margin-top:16px">
+  <section class="card recocard" style="margin-top:16px">
     <h2>„Vali ise” järgmise kuu valik</h2>
     <div class="reco" id="reco"></div>
   </section>
 
-  <section class="card">
+  <section class="card fcchart">
     <h2>Eesti börsihinna prognoos kuude kaupa</h2>
     <p class="note" style="margin-top:-6px">s/kWh koos 24% käibemaksuga, ilma marginaali ja võrgutasuta. Tulp on vahemiku keskpunkt, joon näitab vahemikku.</p>
     <div class="chart-wrap" id="chartWrap">
@@ -141,7 +179,9 @@
     <h2 style="margin-top:20px">Kvartalid</h2>
     <div class="scroll"><table id="tblQuarters"></table></div>
   </section>
+  </div>
 
+  <div class="tg" data-tg="andmed">
   <section class="card" id="spreadCard" hidden>
     <h2>Tegelik hinnavahe Soomega</h2>
     <p class="note" style="margin-top:-6px">Päev-ette hindade kuukeskmised, €/MWh ilma käibemaksuta. „Eesti erines” näitab, kui suure osa ajast oli Eesti hind Soome omast kõrgem ehk kaablid Soome suunal olid täis.</p>
@@ -154,17 +194,22 @@
     <p class="note" style="margin-top:-6px">Soome futuur, €/MWh ilma käibemaksuta.</p>
     <div class="scroll"><table id="tblHistory"></table></div>
   </section>
+  </div>
 
+  <div class="tg" data-tg="mojutajad">
   <section class="card">
     <h2>Hinda mõjutavad tegurid</h2>
     <div id="factors"></div>
   </section>
+  </div>
 
+  <div class="tg" data-tg="andmed">
   <section class="card note">
     <h2>Kuidas see on arvutatud</h2>
     <p id="method"></p>
     <p>Futuurid näitavad turu tänast ootust, mitte lubadust. Üksikute kuude tegelik hind on varem futuuridest kümneid protsente erinenud.</p>
   </section>
+  </div>
 
   <p class="note" id="disclaimer" style="margin-top:24px;font-size:.8rem;color:var(--muted)">Lehel esitatud hinnaprognoosid ja soovitused põhinevad elektribörsi futuuridel, ajaloolistel andmetel ja avalikel uudistel. Need on hinnangud, mitte lubadused: tegelik elektrihind võib prognoositud vahemikust oluliselt erineda. Lehe autor ei vastuta otsuste eest, mis on tehtud selle info põhjal. Leht ei ole seotud ühegi elektrimüüja ega võrguettevõttega.</p>
   <footer id="footer"></footer>
@@ -174,6 +219,17 @@
 const fmt = (n, d = 1) => n == null ? "–" : n.toLocaleString("et-EE", { minimumFractionDigits: d, maximumFractionDigits: d });
 const isWinter = p => { const m = +p.slice(5, 7); return m >= 11 || m <= 3; };
 const fmtDate = s => { const [y, m, d] = s.split("-"); return `${+d}.${+m}.${y}`; };
+
+// Arvutivaate vahekaardid (telefonis on kõik üks pikk leht)
+const TABS = ["tana", "prognoos", "mojutajad", "andmed"];
+function setTab() {
+  const t = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "tana";
+  document.body.dataset.tab = t;
+  document.querySelectorAll("#tabs a").forEach(a => { if (a.dataset.t === t) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+  requestAnimationFrame(() => { if (window._rows) drawChart(window._rows); if (window._spot) drawSpot(window._spot); });
+}
+window.addEventListener("hashchange", setTab);
+setTab();
 
 // Turvalisus: data.json sisu käsitletakse tekstina. Kõik stringid HTML-escape'itakse,
 // lingid lubatakse ainult https:// kujul ja staatus ainult lubatud väärtustest.
