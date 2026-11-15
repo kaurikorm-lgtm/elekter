@@ -74,13 +74,14 @@
   /* Vahelehed nii telefonis kui arvutis */
   .tabs { display: flex; position: sticky; top: 0; z-index: 5; background: var(--bg);
     border-bottom: 1px solid var(--border); margin: 0 -16px 16px; padding: 4px 8px 0; }
-  .tabs a { flex: 1; text-align: center; padding: 12px 4px; text-decoration: none; color: var(--text-2);
-    font-weight: 550; font-size: .92rem; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tabs a { flex: 1; text-align: center; padding: 12px 2px; text-decoration: none; color: var(--text-2);
+    font-weight: 550; font-size: .82rem; white-space: nowrap; border-bottom: 2px solid transparent; margin-bottom: -1px; }
   .tabs a:hover { color: var(--text); }
   .tabs a[aria-current="page"] { color: var(--series); border-bottom-color: var(--series); }
   .tg { display: none; }
   body[data-tab="tana"] .tg[data-tg="tana"], body[data-tab="prognoos"] .tg[data-tg="prognoos"],
-  body[data-tab="mojutajad"] .tg[data-tg="mojutajad"], body[data-tab="andmed"] .tg[data-tg="andmed"] { display: block; }
+  body[data-tab="mojutajad"] .tg[data-tg="mojutajad"], body[data-tab="andmed"] .tg[data-tg="andmed"],
+  body[data-tab="ulekanne"] .tg[data-tg="ulekanne"] { display: block; }
   @media (max-width: 899px) {
     .spotcard .colL, .spotcard .colR, .spotcard .colP { display: contents; }
   }
@@ -112,7 +113,7 @@
   <p class="sub" id="sub">Laen andmeid…</p>
 
   <nav class="tabs" id="tabs" aria-label="Vaated">
-    <a href="#tana" data-t="tana">Täna</a><a href="#prognoos" data-t="prognoos">Prognoos</a><a href="#mojutajad" data-t="mojutajad">Mõjutajad</a><a href="#andmed" data-t="andmed">Andmed</a>
+    <a href="#tana" data-t="tana">Täna</a><a href="#prognoos" data-t="prognoos">Prognoos</a><a href="#andmed" data-t="andmed">Andmed</a><a href="#mojutajad" data-t="mojutajad">Mõjutajad</a><a href="#ulekanne" data-t="ulekanne">Ülekanne</a>
   </nav>
 
   <div class="tg" data-tg="tana">
@@ -154,20 +155,6 @@
       </div>
       <div id="plOut" class="reco" aria-live="polite"></div>
     </div></div>
-  </section>
-
-  <section class="card" id="flowCard" hidden>
-    <h2>Ülekanne naabritega</h2>
-    <p class="note" style="margin-top:-6px">Kas Soome–Eesti kaablid (Estlink) on täis? Kui ei ole, on Eesti hind sama mis Soomes. Kui on täis ja elekter liigub Eestist edasi Lätti, kujuneb Eesti hind koos Läti ja Leeduga.</p>
-    <div class="best" id="flowStatus" aria-live="polite" style="margin-bottom:12px"></div>
-    <div class="kpis" id="flowKpis" style="margin-bottom:12px"></div>
-    <h2 style="font-size:1rem;margin:4px 0 6px">Kaablite koormus, eelmised 24 h ja börsi plaan edasi</h2>
-    <div class="chart-wrap" id="flowWrap">
-      <svg id="flowSvg" role="img" aria-label="Estlinki ja Eesti–Läti ühenduse koormus ajas" width="100%"></svg>
-      <div class="tip" id="flowTip"></div>
-    </div>
-    <div class="legend"><span><i style="background:var(--risk)"></i>täis (vähemalt 97%)</span><span><i style="background:var(--watch)"></i>80–97%</span><span><i style="background:var(--series)"></i>alla 80%</span><span>Kõrgus = koormus võimsusest</span></div>
-    <p class="note" id="flowNote"></p>
   </section>
   </div>
 
@@ -227,6 +214,22 @@
   </section>
   </div>
 
+  <div class="tg" data-tg="ulekanne">
+  <section class="card" id="flowCard" hidden>
+    <h2>Ülekanne naabritega</h2>
+    <p class="note" style="margin-top:-6px">Kas Soome–Eesti kaablid (Estlink) on täis? Kui ei ole, on Eesti hind sama mis Soomes. Kui on täis ja elekter liigub Eestist edasi Lätti, kujuneb Eesti hind koos Läti ja Leeduga.</p>
+    <div class="best" id="flowStatus" aria-live="polite" style="margin-bottom:12px"></div>
+    <div class="kpis" id="flowKpis" style="margin-bottom:12px"></div>
+    <h2 style="font-size:1rem;margin:4px 0 6px">Kaablite koormus, eelmised 24 h ja börsi plaan edasi</h2>
+    <div class="chart-wrap" id="flowWrap">
+      <svg id="flowSvg" role="img" aria-label="Estlinki ja Eesti–Läti ühenduse koormus ajas" width="100%"></svg>
+      <div class="tip" id="flowTip"></div>
+    </div>
+    <div class="legend"><span><i style="background:var(--risk)"></i>täis (vähemalt 97%)</span><span><i style="background:var(--watch)"></i>80–97%</span><span><i style="background:var(--series)"></i>alla 80%</span><span>Kõrgus = koormus võimsusest</span></div>
+    <p class="note" id="flowNote"></p>
+  </section>
+  </div>
+
   <p class="note" id="disclaimer" style="margin-top:24px;font-size:.8rem;color:var(--muted)">Lehel esitatud hinnaprognoosid ja soovitused põhinevad elektribörsi futuuridel, ajaloolistel andmetel ja avalikel uudistel. Need on hinnangud, mitte lubadused: tegelik elektrihind võib prognoositud vahemikust oluliselt erineda. Lehe autor ei vastuta otsuste eest, mis on tehtud selle info põhjal. Leht ei ole seotud ühegi elektrimüüja ega võrguettevõttega.</p>
   <footer id="footer"></footer>
 </main>
@@ -237,7 +240,7 @@ const isWinter = p => { const m = +p.slice(5, 7); return m >= 11 || m <= 3; };
 const fmtDate = s => { const [y, m, d] = s.split("-"); return `${+d}.${+m}.${y}`; };
 
 // Vahekaardid (telefonis ja arvutis)
-const TABS = ["tana", "prognoos", "mojutajad", "andmed"];
+const TABS = ["tana", "prognoos", "andmed", "mojutajad", "ulekanne"];
 function setTab(e) {
   if (e) { const sub = document.getElementById("sub"), y = sub.offsetTop + sub.offsetHeight + 20; if (scrollY > y) window.scrollTo(0, y); }
   const t = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "tana";
