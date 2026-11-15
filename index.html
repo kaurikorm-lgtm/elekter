@@ -71,21 +71,23 @@
   .seg button { font: inherit; font-size: .85rem; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border);
     background: var(--bg); color: var(--text-2); cursor: pointer; min-height: 36px; }
   .seg button[aria-pressed="true"] { background: var(--series); border-color: var(--series); color: #fff; }
-  .tabs { display: none; }
+  /* Vahelehed nii telefonis kui arvutis */
+  .tabs { display: flex; position: sticky; top: 0; z-index: 5; background: var(--bg);
+    border-bottom: 1px solid var(--border); margin: 0 -16px 16px; padding: 4px 8px 0; }
+  .tabs a { flex: 1; text-align: center; padding: 12px 4px; text-decoration: none; color: var(--text-2);
+    font-weight: 550; font-size: .92rem; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tabs a:hover { color: var(--text); }
+  .tabs a[aria-current="page"] { color: var(--series); border-bottom-color: var(--series); }
+  .tg { display: none; }
+  body[data-tab="tana"] .tg[data-tg="tana"], body[data-tab="prognoos"] .tg[data-tg="prognoos"],
+  body[data-tab="mojutajad"] .tg[data-tg="mojutajad"], body[data-tab="andmed"] .tg[data-tg="andmed"] { display: block; }
   @media (max-width: 899px) {
     .spotcard .colL, .spotcard .colR, .spotcard .colP { display: contents; }
   }
   @media (min-width: 900px) {
     main { max-width: 1200px; padding-top: 16px; }
-    .tabs { display: flex; gap: 4px; position: sticky; top: 0; z-index: 5; background: var(--bg);
-      border-bottom: 1px solid var(--border); margin: 0 0 16px; padding-top: 4px; }
-    .tabs a { padding: 10px 16px; text-decoration: none; color: var(--text-2); font-weight: 550;
-      border-bottom: 2px solid transparent; margin-bottom: -1px; }
-    .tabs a:hover { color: var(--text); }
-    .tabs a[aria-current="page"] { color: var(--series); border-bottom-color: var(--series); }
-    .tg { display: none; }
-    body[data-tab="tana"] .tg[data-tg="tana"], body[data-tab="prognoos"] .tg[data-tg="prognoos"],
-    body[data-tab="mojutajad"] .tg[data-tg="mojutajad"], body[data-tab="andmed"] .tg[data-tg="andmed"] { display: block; }
+    .tabs { margin: 0 0 16px; padding: 4px 0 0; gap: 4px; }
+    .tabs a { flex: none; padding: 10px 16px; font-size: 1rem; }
     .spotcard { display: grid; grid-template-columns: 320px minmax(0, 1fr); column-gap: 28px; align-items: start; }
     .spotcard > h2, .spotcard > p.note { grid-column: 1 / -1; }
     .spotcard .colL { grid-column: 1; grid-row: 3; }
@@ -234,9 +236,10 @@ const fmt = (n, d = 1) => n == null ? "–" : n.toLocaleString("et-EE", { minimu
 const isWinter = p => { const m = +p.slice(5, 7); return m >= 11 || m <= 3; };
 const fmtDate = s => { const [y, m, d] = s.split("-"); return `${+d}.${+m}.${y}`; };
 
-// Arvutivaate vahekaardid (telefonis on kõik üks pikk leht)
+// Vahekaardid (telefonis ja arvutis)
 const TABS = ["tana", "prognoos", "mojutajad", "andmed"];
-function setTab() {
+function setTab(e) {
+  if (e) { const sub = document.getElementById("sub"), y = sub.offsetTop + sub.offsetHeight + 20; if (scrollY > y) window.scrollTo(0, y); }
   const t = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "tana";
   document.body.dataset.tab = t;
   document.querySelectorAll("#tabs a").forEach(a => { if (a.dataset.t === t) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
