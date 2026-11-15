@@ -7,8 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          S=$(date -u -d '-3 hours' +%Y-%m-%dT%H:00:00.000Z); E=$(date -u -d '+30 hours' +%Y-%m-%dT%H:00:00.000Z)
+          S=$(date -u -d '-2 hours' +%Y-%m-%dT%H:00:00.000Z); E=$(date -u -d '+30 hours' +%Y-%m-%dT%H:00:00.000Z)
           B=https://dashboard.elering.ee
-          for p in "/v3/api-docs" "/api-docs" "/api/v3/api-docs"; do echo "== $p"; curl -s -m 30 "$B$p" | head -c 300; echo; done
-          curl -s -m 30 "$B/v3/api-docs" -o docs.json; python3 -c "import json;d=json.load(open('docs.json'));[print(k) for k in d.get('paths',{})]" || true
-          for p in "/api/transmission/cross-border?start=$S&end=$E" "/api/transmission/cross-border-planned?start=$S&end=$E" "/api/transmission/cross-border/latest" "/api/system/with-plan?start=$S&end=$E" "/api/system/latest"; do echo "== $p"; curl -s -m 30 "$B$p" | head -c 1500; echo; done
+          curl -s -m 30 "$B/v3/api-docs" -o docs.json
+          python3 - <<'PY'
+          import json;d=json.load(open('docs.json'))
+          for k in ['/api/transmission/cross-border-capacity/{group}','/api/transmission/cross-border-planned-trade','/api/transmission/cross-border/hourly','/api/transmission/cross-border']:
+              print('##',k, json.dumps(d['paths'][k]['get'].get('parameters'))[:900]); print(d['paths'][k]['get'].get('description'))
+          PY
+          for g in finland latvia FI LV ee-fi; do echo "== cap $g"; curl -s -m 30 "$B/api/transmission/cross-border-capacity/$g?start=$S&end=$E" | head -c 700; echo; done
+          echo "== cap"; curl -s -m 30 "$B/api/transmission/cross-border-capacity?start=$S&end=$E" | head -c 700; echo
+          echo "== trade"; curl -s -m 30 "$B/api/transmission/cross-border-planned-trade?start=$S&end=$E" | head -c 1200; echo
+          echo "== hourly"; curl -s -m 30 "$B/api/transmission/cross-border/hourly?start=$S&end=$E" | head -c 500; echo
