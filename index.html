@@ -153,6 +153,20 @@
       <div id="plOut" class="reco" aria-live="polite"></div>
     </div></div>
   </section>
+
+  <section class="card" id="flowCard" hidden>
+    <h2>Ülekanne naabritega</h2>
+    <p class="note" style="margin-top:-6px">Kas Soome–Eesti kaablid (Estlink) on täis? Kui ei ole, on Eesti hind sama mis Soomes. Kui on täis ja elekter liigub Eestist edasi Lätti, kujuneb Eesti hind koos Läti ja Leeduga.</p>
+    <div class="best" id="flowStatus" aria-live="polite" style="margin-bottom:12px"></div>
+    <div class="kpis" id="flowKpis" style="margin-bottom:12px"></div>
+    <h2 style="font-size:1rem;margin:4px 0 6px">Kaablite koormus, eelmised 24 h ja börsi plaan edasi</h2>
+    <div class="chart-wrap" id="flowWrap">
+      <svg id="flowSvg" role="img" aria-label="Estlinki ja Eesti–Läti ühenduse koormus ajas" width="100%"></svg>
+      <div class="tip" id="flowTip"></div>
+    </div>
+    <div class="legend"><span><i style="background:var(--risk)"></i>täis (vähemalt 97%)</span><span><i style="background:var(--watch)"></i>80–97%</span><span><i style="background:var(--series)"></i>alla 80%</span><span>Kõrgus = koormus võimsusest</span></div>
+    <p class="note" id="flowNote"></p>
+  </section>
   </div>
 
   <div class="tg" data-tg="prognoos">
@@ -226,7 +240,7 @@ function setTab() {
   const t = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "tana";
   document.body.dataset.tab = t;
   document.querySelectorAll("#tabs a").forEach(a => { if (a.dataset.t === t) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-  requestAnimationFrame(() => { if (window._rows) drawChart(window._rows); if (window._spot) drawSpot(window._spot); });
+  requestAnimationFrame(() => { if (window._rows) drawChart(window._rows); if (window._spot) drawSpot(window._spot); drawFlows(); });
 }
 window.addEventListener("hashchange", setTab);
 setTab();
@@ -344,13 +358,90 @@ function drawChart(rows) {
     el.addEventListener("mouseleave", () => tip.style.opacity = 0);
   });
 }
-window.addEventListener("resize", () => { if (window._rows) drawChart(window._rows); if (window._spot) drawSpot(window._spot); });
+window.addEventListener("resize", () => { if (window._rows) drawChart(window._rows); if (window._spot) drawSpot(window._spot); drawFlows(); });
 
 // ---- Börsihind 72 h tagasi / 48 h ette ----
 const tz = "Europe/Tallinn";
 const dayKey = t => new Date(t * 1000).toLocaleDateString("sv-SE", { timeZone: tz });
 const hm = t => new Date(t * 1000).toLocaleTimeString("et-EE", { timeZone: tz, hour: "2-digit", minute: "2-digit" });
 const dmy = t => new Date(t * 1000).toLocaleDateString("et-EE", { timeZone: tz, weekday: "short", day: "numeric", month: "numeric" });
+
+// Ülekanded: märk Eesti poolt vaadates, miinus = import Eestisse, pluss = eksport.
+const FULL = 0.97;
+const lvlColor = u => u >= FULL ? "var(--risk)" : u >= 0.8 ? "var(--watch)" : "var(--series)";
+function flowAt(F, t) {
+  const capOf = (g, t, v) => { const a = F.cap[g] || []; let c = null; for (const p of a) { if (p[0] <= t) c = p; else break; } return c ? (v < 0 ? c[1] : c[2]) : null; };
+  const r = F.trade.filter(p => p[0] <= t).pop();
+  if (!r) return null;
+  const fiCap = capOf("FI", r[0], r[1]), lvCap = capOf("LV", r[0], r[2]);
+  return { t: r[0], fi: r[1], lv: r[2], fiCap, lvCap,
+    fiU: fiCap ? Math.min(1, Math.abs(r[1]) / fiCap) : null, lvU: lvCap ? Math.min(1, Math.abs(r[2]) / lvCap) : null };
+}
+const mw = v => v == null ? "–" : Math.round(Math.abs(v)).toLocaleString("et-EE") + " MW";
+const fiDir = v => v < 0 ? "Soome → Eesti" : "Eesti → Soome";
+const lvDir = v => v > 0 ? "Eesti → Läti" : "Läti → Eesti";
+
+fetch("flows.json?v=" + Date.now()).then(r => r.ok ? r.json() : null).then(F => {
+  if (!F || !F.trade || !F.trade.length) return;
+  window._flows = F;
+  const now = flowAt(F, Date.now() / 1000);
+  if (now) {
+    const full = now.fiU != null && now.fiU >= FULL;
+    let msg;
+    if (full && now.fi < 0 && now.lv > 0) msg = `<span class="big" style="color:var(--risk)">Estlink on täis</span><br>Soomest tuleb ${mw(now.fi)} ja Eestist läheb edasi Lätti ${mw(now.lv)}. Soome odav elekter ei mahu rohkem kaablitesse, seega on Eesti hind praegu Soome omast kõrgem ja liigub koos Läti ja Leeduga.`;
+    else if (full) msg = `<span class="big" style="color:var(--risk)">Estlink on täis</span><br>${fiDir(now.fi)} ${mw(now.fi)}. Eesti ja Soome hind võivad praegu erineda.`;
+    else msg = `<span class="big" style="color:var(--ok)">Estlinkis on vaba ruumi</span><br>${fiDir(now.fi)} ${mw(now.fi)} võimsusest ${mw(now.fiCap)}. Eesti hind on praegu tõenäoliselt sama mis Soomes.`;
+    document.getElementById("flowStatus").innerHTML = msg + ` <span class="note">(börsi plaan kell ${hm(now.t)})</span>`;
+    const L = F.latest, S = F.system;
+    const k = (l, v, n) => `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div><div class="n">${n}</div></div>`;
+    document.getElementById("flowKpis").innerHTML =
+      k(`Estlink (${fiDir(now.fi)})`, mw(now.fi), `${Math.round(now.fiU * 100)}% võimsusest ${mw(now.fiCap)}`) +
+      k(`Läti piir (${lvDir(now.lv)})`, mw(now.lv), now.lvU != null ? `${Math.round(now.lvU * 100)}% võimsusest ${mw(now.lvCap)}` : "") +
+      (S ? k("Eesti tootmine / tarbimine", `${Math.round(S.production)} / ${Math.round(S.consumption)}`, `MW, mõõdetud kell ${hm(S.timestamp)}`) : "") +
+      (L ? k("Mõõdetud vood", `${mw(L.finland)} / ${mw(L.latvia)}`, `Soome / Läti piir kell ${hm(L.timestamp)}`) : "");
+  }
+  const last = F.trade[F.trade.length - 1][0];
+  document.getElementById("flowNote").textContent =
+    `Allikas: Elering (börsi kaudu plaanitud ülekanne ja ülekandevõimsus, 15 min kaupa). Plaan on teada kuni ${dmy(last)} ${hm(last + 900)}. Uueneb iga tund.` + (F.error ? ` Viga: ${F.error}` : "");
+  document.getElementById("flowCard").hidden = false;
+  drawFlows();
+}).catch(() => {});
+
+function drawFlows() {
+  const F = window._flows; if (!F) return;
+  const svg = document.getElementById("flowSvg"), W = svg.clientWidth || 600;
+  const rowH = 46, gap = 26, top = 18, H = top + 2 * rowH + gap + 22, padL = 70, padR = 6;
+  svg.setAttribute("height", H); svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const pts = F.trade.map(p => flowAt(F, p[0]));
+  const t0 = pts[0].t, t1 = pts[pts.length - 1].t + 900, x = t => padL + (t - t0) / (t1 - t0) * (W - padL - padR);
+  const bw = Math.max(0.6, (W - padL - padR) * 900 / (t1 - t0) - 0.3);
+  let s = "";
+  [["Estlink", "fiU", top], ["Läti piir", "lvU", top + rowH + gap]].forEach(([lab, key, y]) => {
+    s += `<text x="0" y="${y + rowH / 2 + 4}">${lab}</text><line x1="${padL}" x2="${W - padR}" y1="${y + rowH}" y2="${y + rowH}" stroke="var(--grid)"/>`;
+    s += `<line x1="${padL}" x2="${W - padR}" y1="${y + rowH * (1 - FULL)}" y2="${y + rowH * (1 - FULL)}" stroke="var(--grid)" stroke-dasharray="3 3"/>`;
+    pts.forEach(p => { const u = p[key]; if (u == null) return; const h = Math.max(1, u * rowH);
+      s += `<rect x="${x(p.t).toFixed(1)}" y="${(y + rowH - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" fill="${lvlColor(u)}"/>`; });
+  });
+  // päevade piirid ja praegune hetk
+  for (let t = Math.ceil(t0 / 3600) * 3600; t < t1; t += 3600) {
+    if ((hm(t) !== "00:00" && hm(t) !== "12:00") || x(t) > W - 44) continue;
+    s += `<line x1="${x(t)}" x2="${x(t)}" y1="${top - 4}" y2="${H - 18}" stroke="var(--grid)"/><text x="${x(t) + 3}" y="${H - 4}">${hm(t) === "00:00" ? dmy(t) : "12:00"}</text>`;
+  }
+  const n = Date.now() / 1000;
+  if (n > t0 && n < t1) s += `<line x1="${x(n)}" x2="${x(n)}" y1="${top - 8}" y2="${H - 18}" stroke="var(--text)" stroke-width="1.5"/><text x="${x(n) + 3}" y="${top - 8}" style="font-weight:600">praegu</text>`;
+  svg.innerHTML = s;
+  const tip = document.getElementById("flowTip"), wrap = document.getElementById("flowWrap");
+  svg.onpointermove = svg.onpointerdown = e => {
+    const r = svg.getBoundingClientRect(), px = e.clientX - r.left;
+    if (px < padL) { tip.style.opacity = 0; return; }
+    const t = t0 + (px - padL) / (W - padL - padR) * (t1 - t0), p = flowAt(F, t); if (!p) return;
+    tip.innerHTML = `<b>${dmy(p.t)} ${hm(p.t)}</b><br>Estlink: ${fiDir(p.fi)} ${mw(p.fi)} (${Math.round((p.fiU || 0) * 100)}%)<br>Läti piir: ${lvDir(p.lv)} ${mw(p.lv)} (${Math.round((p.lvU || 0) * 100)}%)`;
+    tip.style.opacity = 1; tip.style.top = "0px";
+    tip.style.left = Math.min(Math.max(0, px - 90), wrap.clientWidth - tip.offsetWidth) + "px";
+  };
+  svg.onpointerleave = () => tip.style.opacity = 0;
+}
+window.addEventListener("resize", () => drawFlows());
 
 fetch("spread.json?v=" + Date.now()).then(r => r.ok ? r.json() : null).then(S => {
   if (!S || !S.months || !S.months.length) return;
