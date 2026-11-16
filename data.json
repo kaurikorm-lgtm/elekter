@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-15",
+  "updated": "2026-11-16",
   "futuresDate": "13.11.2026",
   "futuresSource": {
     "name": "Euronext Nord Pool sulgemishinnad (sahkotutka.fi, parassahko.fi kaudu)",
@@ -15,7 +15,7 @@
       10,
       30
     ],
-    "note": "Vahemik põhineb viimase 12 kuu talvekuude keskmisel hinnavahel (umbes 50 €/MWh) ja viimase 30 päeva keskmisel (umbes 89 €/MWh). Novembri alguses oli Eesti hind Soomest mõnel päeval üle 150 €/MWh kõrgem, sest Soome–Eesti kaablid on täis ja Eesti hind kujuneb koos Läti ja Leeduga."
+    "note": "Vahemik põhineb viimase 12 kuu talvekuude keskmisel hinnavahel (umbes 50 €/MWh) ja viimase 30 päeva keskmisel (umbes 86 €/MWh). Novembri alguses oli Eesti hind Soomest mõnel päeval üle 150 €/MWh kõrgem, sest Soome–Eesti kaablid on täis ja Eesti hind kujuneb koos Läti ja Leeduga."
   },
   "profileFactor": {
     "winter": 1.13,
@@ -124,6 +124,15 @@
         "2026-12": 84.0,
         "2027-01": 114.72,
         "2027-02": 120.61
+      }
+    },
+    {
+      "date": "2026-11-13",
+      "approx": false,
+      "fi": {
+        "2026-12": 93.79,
+        "2027-01": 119.0,
+        "2027-02": 127.93
       }
     }
   ],
