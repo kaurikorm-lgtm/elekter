@@ -5,6 +5,11 @@ on:
     branches: [main]
   schedule:
     - cron: "7 * * * *"   # iga tund
+    # Järgmise päeva hinnad avaldatakse ~11:45 UTC; GitHub jätab tunniseid käivitusi
+    # sageli vahele, seega lisakäivitused avaldamise järel
+    - cron: "52 11 * * *"
+    - cron: "12,27,42 12 * * *"
+    - cron: "17 13 * * *"
   workflow_dispatch:
 
 permissions:
