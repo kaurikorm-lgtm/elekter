@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-16",
-  "futuresDate": "13.11.2026",
+  "updated": "2026-11-17",
+  "futuresDate": "16.11.2026",
   "futuresSource": {
     "name": "Euronext Nord Pool sulgemishinnad (sahkotutka.fi, parassahko.fi kaudu)",
     "url": "https://sahkotutka.fi/futuurit"
@@ -25,64 +25,64 @@
     {
       "period": "2026-12",
       "label": "Dets 2026",
-      "system": 148.3,
-      "fi": 93.8
+      "system": 148.25,
+      "fi": 95.25
     },
     {
       "period": "2027-01",
       "label": "Jaan 2027",
-      "system": 152.0,
-      "fi": 119.0
+      "system": 151.01,
+      "fi": 119.16
     },
     {
       "period": "2027-02",
       "label": "Veebr 2027",
-      "system": 149.5,
-      "fi": 127.9
+      "system": 150.26,
+      "fi": 127.26
     },
     {
       "period": "2027-03",
       "label": "Märts 2027",
-      "system": 114.0,
-      "fi": 88.8
+      "system": 112.95,
+      "fi": 88.29
     },
     {
       "period": "2027-04",
       "label": "Apr 2027",
-      "system": 93.5,
-      "fi": 78.7
+      "system": 94.0,
+      "fi": 79.1
     },
     {
       "period": "2027-05",
       "label": "Mai 2027",
-      "system": 51.0,
-      "fi": 36.2
+      "system": 51.48,
+      "fi": 36.58
     }
   ],
   "quarters": [
     {
       "label": "Q1 2027",
       "winter": true,
-      "system": 137.9,
-      "fi": 112.6
+      "system": 137.8,
+      "fi": 113.14
     },
     {
       "label": "Q2 2027",
       "winter": false,
-      "system": 62.5,
-      "fi": 47.7
+      "system": 63.25,
+      "fi": 48.35
     },
     {
       "label": "Q3 2027",
       "winter": false,
       "system": 42.6,
-      "fi": 35.4
+      "fi": 35.43
     },
     {
       "label": "Q4 2027",
       "winter": true,
-      "system": 69.0,
-      "fi": 63.5
+      "system": 69.5,
+      "fi": 64.18
     }
   ],
   "alexela": {
@@ -133,6 +133,15 @@
         "2026-12": 93.79,
         "2027-01": 119.0,
         "2027-02": 127.93
+      }
+    },
+    {
+      "date": "2026-11-16",
+      "approx": false,
+      "fi": {
+        "2026-12": 95.25,
+        "2027-01": 119.16,
+        "2027-02": 127.26
       }
     }
   ],
@@ -186,11 +195,11 @@
     },
     {
       "title": "Olkiluoto 3 tuumajaam",
-      "status": "risk",
-      "text": "OL3 annab umbes 14% Soome elektritoodangust. Selle hooldusseisak algas 10. septembril ja pidi lõppema oktoobri lõpus, kuid taaskäivitus on lükatud 18. novembrile 2026. Seni on Soome hind tuule puudumisel kõrgem.",
-      "source": "Stara.fi",
-      "url": "https://www.stara.fi/2026/11/05/porssisahkoa-kayttavien-piina-jatkuu-olkiluodon-huoltokatkos-venyy-viikoilla/",
-      "date": "2026-11-05"
+      "status": "ok",
+      "text": "OL3 (1600 MW, umbes 14% Soome toodangust) ühendati pärast üle kahe kuu kestnud ja mitu korda pikenenud hooldusseisakut 17. novembril taas võrku. Täisvõimsuseni jõudmine võtab TVO sõnul umbes 80 tundi; järgmine plaaniline seisak on 18 kuu pärast. See peaks Soome hinda ja Soome kaudu ka Eesti hinda alla suruma.",
+      "source": "Daily Northern (Yle põhjal)",
+      "url": "https://www.dailynorthern.com/39249/olkiluoto-3-returns-to-the-national-grid-after-maintenance/",
+      "date": "2026-11-17"
     },
     {
       "title": "Tuul ja päike",
