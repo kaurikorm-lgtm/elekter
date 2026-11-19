@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-18",
-  "futuresDate": "18.11.2026",
+  "updated": "2026-11-19",
+  "futuresDate": "19.11.2026",
   "futuresSource": {
     "name": "Euronext Nord Pool sulgemishinnad (sahkotutka.fi, parassahko.fi kaudu)",
     "url": "https://sahkotutka.fi/futuurit"
@@ -25,20 +25,20 @@
     {
       "period": "2026-12",
       "label": "Dets 2026",
-      "system": 146.93,
-      "fi": 94.45
+      "system": 149.65,
+      "fi": 96.15
     },
     {
       "period": "2027-01",
       "label": "Jaan 2027",
-      "system": 148.51,
-      "fi": 120.68
+      "system": 151.0,
+      "fi": 122.05
     },
     {
       "period": "2027-02",
       "label": "Veebr 2027",
-      "system": 146.9,
-      "fi": 128.76
+      "system": 148.5,
+      "fi": 130.07
     },
     {
       "period": "2027-03",
@@ -49,50 +49,54 @@
     {
       "period": "2027-04",
       "label": "Apr 2027",
-      "system": 94.13,
-      "fi": 79.63
+      "system": 94.4,
+      "fi": 79.65
     },
     {
       "period": "2027-05",
       "label": "Mai 2027",
-      "system": 51.05,
-      "fi": 36.55
+      "system": 51.71,
+      "fi": 36.96
     }
   ],
   "quarters": [
     {
       "label": "Q1 2027",
       "winter": true,
-      "system": 134.26,
-      "fi": 111.26
+      "system": 135.9,
+      "fi": 112.9
     },
     {
       "label": "Q2 2027",
       "winter": false,
-      "system": 63.0,
-      "fi": 48.5
+      "system": 63.5,
+      "fi": 48.75
     },
     {
       "label": "Q3 2027",
       "winter": false,
-      "system": 42.15,
-      "fi": 34.86
+      "system": 42.6,
+      "fi": 35.31
     },
     {
       "label": "Q4 2027",
       "winter": true,
-      "system": 68.75,
-      "fi": 62.33
+      "system": 69.5,
+      "fi": 63.0
     }
   ],
   "alexela": {
     "nextMonth": "Detsember 2026",
-    "nextPrice": null,
-    "publishNote": "Alexela avaldab detsembri baashinna hiljemalt 20.11.2026. Valik tuleb teha äpis hiljemalt 28.11.",
+    "nextPrice": 18.9,
+    "publishNote": "Alexela avaldas detsembri baashinna (18,9 s/kWh). Valik tuleb teha äpis hiljemalt 28.11.2026; jaanuari hind avaldatakse hiljemalt 20.12.2026.",
     "known": [
       {
         "month": "November 2026",
         "price": 14.9
+      },
+      {
+        "month": "Detsember 2026",
+        "price": 18.9
       }
     ],
     "margin": 0.46,
@@ -155,12 +159,12 @@
       "date": "2026-11-13"
     },
     {
-      "title": "Balti elektrijaamad remondis",
+      "title": "Auvere tagasi, Läti-Leedu jaamad remondis",
       "status": "risk",
-      "text": "Auvere elektrijaam on remondist naasmas. Lätis ja Leedus on kummaski remondis gaasijaamu kokku umbes kahe Auvere jagu (Riia TEC-2 26. novembrini, TEC-1 14. novembrini, Leedu Elektrėnai 25. novembrini). Enefiti hinnangul võivad hinnatipud langeda, kui remonditud võimsused novembris turule naasevad.",
-      "source": "ERR",
-      "url": "https://www.err.ee/1610195524/eestis-on-remonttoode-tottu-suur-elektridefitsiit",
-      "date": "2026-11-13"
+      "text": "Auvere elektrijaam (umbes 270 MW) toodab pärast üle kuu kestnud seisakut taas alates 13. novembrist, kuid osalise võimsusega. Lätis ja Leedus on endiselt remondis gaasijaamu kokku umbes kahe Auvere jagu ning Rootsis umbes 4000 MW tuumavõimsust. Enefiti hinnangul vähendavad naasnud jaamad eelkõige hinnatippe tuulevaiksel ajal, kuid püsivalt odavamat hinda need ei taga.",
+      "source": "Postimees",
+      "url": "https://majandus.postimees.ee/8585840/auvere-ja-olkiluoto-3-naasid-turule-kas-viimaks-on-lootust-odavamale-borsielektrile",
+      "date": "2026-11-18"
     },
     {
       "title": "Rootsi tuumajaamad ja Kesk-Euroopa hind",
