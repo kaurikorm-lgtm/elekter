@@ -47,7 +47,7 @@ jobs:
         continue-on-error: true
         run: |
           python3 scripts/update_history.py _archive .
-          FUTURES_FORCE=1 python3 scripts/update_futures.py data.json _archive/daily.csv || echo "::warning::futuuride uuendamine ebaõnnestus"
+          python3 scripts/update_futures.py data.json _archive/daily.csv || echo "::warning::futuuride uuendamine ebaõnnestus"
           cd _archive
           if [ -n "$(git status --porcelain)" ]; then
             git config user.name "github-actions[bot]"
