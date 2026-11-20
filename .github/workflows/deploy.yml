@@ -48,6 +48,7 @@ jobs:
         run: |
           python3 scripts/update_history.py _archive .
           python3 scripts/update_futures.py data.json _archive/daily.csv || echo "::warning::futuuride uuendamine ebaõnnestus"
+          python3 scripts/update_alexela.py data.json || echo "::warning::Alexela hinna uuendamine ebaõnnestus"
           cd _archive
           if [ -n "$(git status --porcelain)" ]; then
             git config user.name "github-actions[bot]"
@@ -57,7 +58,7 @@ jobs:
             git push -q origin HEAD:data
           fi
           cd .. && rm -rf _archive
-      - name: Salvesta data.json muudatused (futuurid, hinnavahe)
+      - name: Salvesta data.json muudatused (futuurid, hinnavahe, Alexela)
         continue-on-error: true
         run: |
           if [ -n "$(git status --porcelain data.json)" ]; then
@@ -70,9 +71,6 @@ jobs:
               sleep 5
             done
           fi
-      - name: Alexela silumine (ajutine)
-        continue-on-error: true
-        run: python3 scripts/probe_alexela.py
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
