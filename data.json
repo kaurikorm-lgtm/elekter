@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-21",
+  "updated": "2026-11-22",
   "futuresDate": "20.11.2026",
   "futuresSource": {
     "name": "Euronext Nord Pool sulgemishinnad (sahkotutka.fi, parassahko.fi kaudu)",
@@ -206,12 +206,12 @@
       "date": "2026-11-17"
     },
     {
-      "title": "Tuul ja päike",
-      "status": "watch",
-      "text": "Oktoobris kattis tuule- ja päikeseenergia umbes 40% Balti riikide tarbimisest, novembri alguses ainult umbes 20%: päikesetoodang vähenes poole võrra ja tuulikud töötasid vaid umbes 10% võimsusega. Pehme ja tuuline talv aitaks hinnatõusu pidurdada, pikk külm ja tuulevaikne periood tõstaks hindu kogu Baltikumis.",
-      "source": "ERR",
-      "url": "https://www.err.ee/1610191780/toost-valjas-jaamad-ja-kesk-euroopa-kallis-elekter-viisid-elektri-hinna-noolena-ules",
-      "date": "2026-11-11"
+      "title": "Ilm: külmaoht ja vähene tuul",
+      "status": "risk",
+      "text": "Stratosfääri polaarpööris on novembris lagunemas rekordiliselt vara, mis suurendab külma ilma tõenäosust Euroopas; Wood Mackenzie hinnangul võib külm avalduda detsembris ja jaanuaris. Kütteperioodi algus on olnud Põhja-Euroopas külm ja vähese tuulega ning ELi gaasihoidlate täitmine on novembris kiiresti vähenenud. Pikk külm ja tuulevaikne periood tõstaks hindu kogu Baltikumis.",
+      "source": "CNBC",
+      "url": "https://www.cnbc.com/2026/11/21/polar-vortex-europe-gas-prices.html",
+      "date": "2026-11-21"
     }
   ]
 }
