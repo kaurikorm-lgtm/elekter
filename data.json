@@ -18,7 +18,7 @@
     "note": "Vahemik põhineb viimase 12 kuu talvekuude keskmisel Eesti–Soome hinnavahel (umbes 48 €/MWh) ja viimase 30 päeva keskmisel (umbes 82 €/MWh)."
   },
   "profileFactor": {
-    "winter": 1.13,
+    "winter": 0.9,
     "summer": 0.9
   },
   "months": [
