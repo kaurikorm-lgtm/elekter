@@ -1,6 +1,6 @@
 {
   "updated": "2026-11-23",
-  "futuresDate": "21.11.2026",
+  "futuresDate": "23.11.2026",
   "futuresSource": {
     "name": "Euronext Nord Pool sulgemishinnad (sahkotutka.fi, parassahko.fi kaudu)",
     "url": "https://sahkotutka.fi/futuurit"
@@ -25,64 +25,64 @@
     {
       "period": "2026-12",
       "label": "Dets 2026",
-      "system": 157.97,
-      "fi": 103.22
+      "system": 158.78,
+      "fi": 105.78
     },
     {
       "period": "2027-01",
       "label": "Jaan 2027",
-      "system": 156.47,
-      "fi": 126.47
+      "system": 157.2,
+      "fi": 128.7
     },
     {
       "period": "2027-02",
       "label": "Veebr 2027",
-      "system": 153.09,
-      "fi": 133.09
+      "system": 153.0,
+      "fi": 134.0
     },
     {
       "period": "2027-03",
       "label": "Märts 2027",
-      "system": 114.0,
-      "fi": 91.0
+      "system": 116.0,
+      "fi": 93.5
     },
     {
       "period": "2027-04",
       "label": "Apr 2027",
-      "system": 95.97,
-      "fi": 79.97
+      "system": 95.98,
+      "fi": 79.68
     },
     {
       "period": "2027-05",
       "label": "Mai 2027",
-      "system": 52.88,
-      "fi": 36.88
+      "system": 53.32,
+      "fi": 37.02
     }
   ],
   "quarters": [
     {
       "label": "Q1 2027",
       "winter": true,
-      "system": 141.13,
-      "fi": 118.13
+      "system": 141.5,
+      "fi": 119.0
     },
     {
       "label": "Q2 2027",
       "winter": false,
-      "system": 66.0,
-      "fi": 50.0
+      "system": 66.15,
+      "fi": 49.85
     },
     {
       "label": "Q3 2027",
       "winter": false,
-      "system": 43.5,
-      "fi": 36.75
+      "system": 44.0,
+      "fi": 36.43
     },
     {
       "label": "Q4 2027",
       "winter": true,
-      "system": 70.2,
-      "fi": 61.05
+      "system": 70.3,
+      "fi": 63.34
     }
   ],
   "alexela": {
@@ -146,6 +146,15 @@
         "2026-12": 95.25,
         "2027-01": 119.16,
         "2027-02": 127.26
+      }
+    },
+    {
+      "date": "2026-11-23",
+      "approx": false,
+      "fi": {
+        "2026-12": 105.78,
+        "2027-01": 128.7,
+        "2027-02": 134.0
       }
     }
   ],
