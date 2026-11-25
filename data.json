@@ -207,12 +207,12 @@
       "url": "https://mindenergy.com/insights/knowledge-hub/november-recap-panic-on-the-markets-ahead-of-winter"
     },
     {
-      "title": "Olkiluoto 3 tuumajaam",
-      "status": "ok",
-      "text": "OL3 (1600 MW, umbes 14% Soome toodangust) ühendati pärast üle kahe kuu kestnud ja mitu korda pikenenud hooldusseisakut 17. novembril taas võrku. Täisvõimsuseni jõudmine võtab TVO sõnul umbes 80 tundi; järgmine plaaniline seisak on 18 kuu pärast. See peaks Soome hinda ja Soome kaudu ka Eesti hinda alla suruma.",
-      "source": "Daily Northern (Yle põhjal)",
-      "url": "https://www.dailynorthern.com/39249/olkiluoto-3-returns-to-the-national-grid-after-maintenance/",
-      "date": "2026-11-17"
+      "title": "Olkiluoto 3: lühiseisak klapirikke tõttu",
+      "status": "watch",
+      "text": "OL3 (1600 MW) naasis võrku 17. novembril, kuid võimsuse tõstmisel leiti protsessisüsteemis klapirike ja 25. novembril piirati toodang umbes 60%-ni. Remondiks peatatakse tootmine 26. novembril kell 01.00; TVO hinnangul lõpeb töö laupäeva, 28. novembri õhtul. Seisaku ajal on Soome ja Eesti hind tõenäoliselt kõrgem, pärast naasmist peaks OL3 Soome hinda taas alla suruma.",
+      "source": "TVO",
+      "url": "https://www.tvo.fi/ajankohtaista/tiedotteetporssitiedotteet/2026/ol3ntuotantokeskeytetaanventtiilivianselvityksenvuoksi.html",
+      "date": "2026-11-25"
     },
     {
       "title": "Ilm: külmaoht ja vähene tuul",
