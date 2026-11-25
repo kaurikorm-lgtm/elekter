@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-25",
-  "futuresDate": "25.11.2026",
+  "updated": "2026-11-26",
+  "futuresDate": "26.11.2026",
   "futuresSource": {
     "name": "Euronext Nord Pool sulgemishinnad (sahkotutka.fi, parassahko.fi kaudu)",
     "url": "https://sahkotutka.fi/futuurit"
@@ -8,14 +8,14 @@
   "vat": 1.24,
   "eeSpread": {
     "winter": [
-      50,
-      90
+      40,
+      100
     ],
     "summer": [
       10,
       30
     ],
-    "note": "Vahemik põhineb viimase 12 kuu talvekuude keskmisel Eesti–Soome hinnavahel (umbes 50 €/MWh) ja viimase 30 päeva keskmisel (umbes 87 €/MWh)."
+    "note": "Vahemik põhineb viimase 12 kuu talvekuude keskmisel Eesti–Soome hinnavahel (umbes 49 €/MWh) ja viimase 30 päeva keskmisel (umbes 91 €/MWh)."
   },
   "profileFactor": {
     "winter": 0.9,
@@ -25,64 +25,64 @@
     {
       "period": "2026-12",
       "label": "Dets 2026",
-      "system": 156.93,
-      "fi": 103.93
+      "system": 152.0,
+      "fi": 103.0
     },
     {
       "period": "2027-01",
       "label": "Jaan 2027",
-      "system": 156.75,
-      "fi": 128.56
+      "system": 153.5,
+      "fi": 127.64
     },
     {
       "period": "2027-02",
       "label": "Veebr 2027",
-      "system": 152.5,
-      "fi": 133.75
+      "system": 149.5,
+      "fi": 132.8
     },
     {
       "period": "2027-03",
       "label": "Märts 2027",
-      "system": 114.25,
-      "fi": 92.25
+      "system": 112.65,
+      "fi": 91.79
     },
     {
       "period": "2027-04",
       "label": "Apr 2027",
-      "system": 96.61,
-      "fi": 80.13
+      "system": 97.16,
+      "fi": 80.85
     },
     {
       "period": "2027-05",
       "label": "Mai 2027",
-      "system": 55.66,
-      "fi": 39.18
+      "system": 56.26,
+      "fi": 39.95
     }
   ],
   "quarters": [
     {
       "label": "Q1 2027",
       "winter": true,
-      "system": 140.71,
-      "fi": 118.71
+      "system": 138.15,
+      "fi": 117.29
     },
     {
       "label": "Q2 2027",
       "winter": false,
-      "system": 66.8,
-      "fi": 50.32
+      "system": 66.75,
+      "fi": 50.44
     },
     {
       "label": "Q3 2027",
       "winter": false,
-      "system": 44.61,
-      "fi": 36.93
+      "system": 44.5,
+      "fi": 37.43
     },
     {
       "label": "Q4 2027",
       "winter": true,
-      "system": 70.72,
-      "fi": 64.22
+      "system": 70.5,
+      "fi": 65.29
     }
   ],
   "alexela": {
