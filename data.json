@@ -194,10 +194,10 @@
     {
       "title": "Maagaasi hind ja varud",
       "status": "risk",
-      "text": "Gaasijaamad määravad praegu Baltikumis elektri hinna. Euroopa gaasi hind (TTF) tõusis 23. novembril külmema ilmaprognoosi tõttu 8,6% ehk umbes 96 €/MWh-ni; ELi gaasihoidlad olid 22. novembri seisuga täis vaid 69,2%. Jaanuaris jõustub ka Venemaa gaasi impordikeeld.",
+      "text": "Gaasijaamad määravad praegu Baltikumis elektri hinna. Euroopa gaasi hind (TTF) tõusis 24. novembril neljandat päeva järjest umbes 90,5 €/MWh-ni; ELi gaasihoidlad olid 23. novembri seisuga täis vaid 68,9% (viie aasta keskmine 89%). Jaanuaris jõustub ka Venemaa gaasi impordikeeld.",
       "source": "OilPrice.com",
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/European-Natural-Gas-Prices-Surge-86-as-Cold-Snap-Looms.html",
-      "date": "2026-11-23"
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/European-Gas-Prices-Climb-as-Cold-Snap-Threatens-Depleted-Reserves.html",
+      "date": "2026-11-24"
     },
     {
       "title": "Põhjamaade veehoidlad",
@@ -207,12 +207,12 @@
       "url": "https://mindenergy.com/insights/knowledge-hub/november-recap-panic-on-the-markets-ahead-of-winter"
     },
     {
-      "title": "Olkiluoto 3: lühiseisak klapirikke tõttu",
-      "status": "watch",
-      "text": "OL3 (1600 MW) naasis võrku 17. novembril, kuid võimsuse tõstmisel leiti protsessisüsteemis klapirike ja 25. novembril piirati toodang umbes 60%-ni. Remondiks peatatakse tootmine 26. novembril kell 01.00; TVO hinnangul lõpeb töö laupäeva, 28. novembri õhtul. Seisaku ajal on Soome ja Eesti hind tõenäoliselt kõrgem, pärast naasmist peaks OL3 Soome hinda taas alla suruma.",
+      "title": "Olkiluoto 3 naaseb pärast klapiremonti",
+      "status": "ok",
+      "text": "OL3 (1600 MW) tootmine peatati 26. novembril kell 4.15 protsessisüsteemi klapirikke parandamiseks, kuid TVO teatel naaseb reaktor tootmisse juba sama päeva keskpäeval, oodatust (laupäeva õhtu) varem. Töötav OL3 surub Soome ja seeläbi ka Eesti hinda alla.",
       "source": "TVO",
-      "url": "https://www.tvo.fi/ajankohtaista/tiedotteetporssitiedotteet/2026/ol3ntuotantokeskeytetaanventtiilivianselvityksenvuoksi.html",
-      "date": "2026-11-25"
+      "url": "https://www.tvo.fi/ajankohtaista/tiedotteetporssitiedotteet/2026/ol3palaasahkontuotantoonarvioituaaiemmin.html",
+      "date": "2026-11-26"
     },
     {
       "title": "Ilm: külmaoht ja vähene tuul",
