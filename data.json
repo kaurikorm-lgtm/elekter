@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-27",
+  "updated": "2026-11-28",
   "futuresDate": "27.11.2026",
   "futuresSource": {
     "name": "Euronext Nord Pool sulgemishinnad (sahkotutka.fi, parassahko.fi kaudu)",
@@ -8,14 +8,14 @@
   "vat": 1.24,
   "eeSpread": {
     "winter": [
-      40,
-      100
+      30,
+      90
     ],
     "summer": [
       10,
       30
     ],
-    "note": "Vahemik põhineb viimase 12 kuu talvekuude keskmisel Eesti–Soome hinnavahel (umbes 49 €/MWh) ja viimase 30 päeva keskmisel (umbes 91 €/MWh)."
+    "note": "Vahemik põhineb viimase 12 kuu talvekuude keskmisel Eesti–Soome hinnavahel (umbes 39 €/MWh) ja viimase 30 päeva keskmisel (umbes 86 €/MWh)."
   },
   "profileFactor": {
     "winter": 0.9,
